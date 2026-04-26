@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Dashboard Kabinet</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            width: 100%;
+            overflow: hidden; /* Skrol bo'lmasligi uchun */
+        }
+        iframe {
+            border: none;
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+</head>
+<body>
+
+    <iframe id="cabinetFrame" src="" allow="geolocation; microphone; camera"></iframe>
+
+    <script>
+        // 1. Google Apps Script'dan olgan asosiy Web App havolangizni shu yerga qo'ying
+        const scriptUrl = "https://script.google.com/macros/s/AKfycbxMODQ5nUHugL4OneiR6J5fK1EL_Nv5Enhn7c1HOBRDCwdTiib-BqJrunoHp39b3yAGuw/exec";
+
+        // 2. URL dagi barcha parametrlarni olish (?id=123&page=cabinet kabi)
+        const queryString = window.location.search;
+        
+        // 3. Iframe'ga parametrlarni qo'shib yuborish
+        // Agar GitHub havolangizga ?id=123 kelsa, u buni Google Scriptga ham yuboradi
+        const frame = document.getElementById('cabinetFrame');
+        
+        if (queryString) {
+            frame.src = scriptUrl + queryString;
+        } else {
+            // Agar parametr berilmagan bo'lsa, xatolik chiqmasligi uchun:
+            frame.src = scriptUrl + "?page=cabinet";
+        }
+    </script>
+</body>
+</html>
