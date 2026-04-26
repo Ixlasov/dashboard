@@ -3,36 +3,120 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Dashboard Iframe</title>
+    <title>Analytics Fullscreen</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
+        /* Butun ekranni va xavfsiz hududlarni boshqarish */
+        :root {
+            --bg-color: #f3f4f6; /* Dashboardingiz fon rangi bilan bir xil */
+            --header-color: #1e40af; /* Blue-800 */
+        }
+
         body, html {
-            margin: 0; padding: 0; width: 100%; height: 100%;
-            overflow: hidden; background-color: #1e40af; /* Header rangiga mos */
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden; /* Skrollni bloklash */
+            background-color: var(--bg-color);
+            position: fixed; /* iOS yopilib ketmasligi uchun */
         }
+
+        /* Iframe to'liq ekranni egallaydi */
         iframe {
-            border: none; width: 100%; height: 100%;
+            border: none;
+            width: 100%;
+            height: 100vh;
             display: block;
+            /* iOS pastki qismidagi chiziq uchun joy */
+            padding-bottom: env(safe-area-inset-bottom);
+            box-sizing: border-box;
         }
+
+        /* Yuklanish vaqti ko'rinadigan qatlam */
+        #loading-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--bg-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #cbd5e1;
+            border-top: 4px solid var(--header-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
+
+    <div id="loading-overlay">
+        <div class="spinner"></div>
+    </div>
+
     <iframe id="cabinetFrame" src="" allow="geolocation; microphone; camera"></iframe>
 
     <script>
+        // 1. Telegram WebApp sozlamalari
         const tg = window.Telegram.WebApp;
-        tg.expand(); // Telegramda butun ekranga yoyish
-        tg.enableClosingConfirmation(); // Yopishdan oldin so'rash
 
+        // Ilovani tayyorlash
+        tg.ready();
+        tg.expand(); // Maksimal yoyish
+        
+        // Fullscreen (Agar Telegram versiyasi qo'llab-quvvatlasa)
+        if (tg.requestFullscreen) {
+            tg.requestFullscreen();
+        }
+
+        // Ranglarni sozlash (Footer va Header birlashishi uchun)
+        tg.setHeaderColor('#1e40af'); // Teparoq ko'k
+        tg.setBackgroundColor('#f3f4f6'); // Pastki va fon rangi
+        
+        // Agar Telegram yangi versiya bo'lsa, pastki bar rangini o'zgartirish
+        if (tg.setBottomBarColor) {
+            tg.setBottomBarColor('#f3f4f6'); 
+        }
+
+        // Yopishdan oldin tasdiqlash
+        tg.enableClosingConfirmation();
+
+        // 2. URL shakllantirish
+        // BU YERGA O'ZINGIZNING GOOGLE APPS SCRIPT WEBB APP LINKINGIZNI QO'YING
         const scriptUrl = "https://script.google.com/macros/s/AKfycbxMODQ5nUHugL4OneiR6J5fK1EL_Nv5Enhn7c1HOBRDCwdTiib-BqJrunoHp39b3yAGuw/exec";
-        const queryString = window.location.search;
+        
+        const params = new URLSearchParams(window.location.search);
+        const userId = params.get('id');
+        const page = params.get('page') || 'cabinet';
+
         const frame = document.getElementById('cabinetFrame');
         
         // Iframe manzilini o'rnatish
-        frame.src = scriptUrl + (queryString || "?page=cabinet");
+        if (userId) {
+            frame.src = `${scriptUrl}?page=${page}&id=${userId}`;
+        } else {
+            // ID yo'q bo'lsa xavfsizlik uchun
+            document.body.innerHTML = "<h3 style='text-align:center; margin-top:20px;'>Xatolik: ID topilmadi!</h3>";
+        }
 
-        // Telegram rangini o'rnatish
-        tg.setHeaderColor('#1E40AF');
+        // 3. Iframe yuklanganda spinnerni o'chirish
+        frame.onload = function() {
+            document.getElementById('loading-overlay').style.display = 'none';
+        };
+
+        // 4. Telegram orqali tugmalarni boshqarish (Ixtiyoriy)
+        // Masalan: Asosiy tugmani (Main Button) ko'rsatish
+        tg.MainButton.setText("MA'LUMOTLARNI YANGILASH")
+          .hide(); // Kerak bo'lsa .show() qiling
+          
     </script>
 </body>
 </html>
