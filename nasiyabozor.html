@@ -1,0 +1,1382 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Nasiya Daftar</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0b0d17;--surface:#13162a;--s2:#1a1e35;--s3:#222744;
+  --accent:#7b6ff0;--a2:#e8649a;--a3:#26dba8;--a4:#f5a623;
+  --text:#eef0ff;--t2:#8892c0;--t3:#434876;
+  --border:rgba(123,111,240,0.13);
+  --red:#f04f6a;--green:#26dba8;--yellow:#f5c842;
+  --r:16px;--rs:11px;
+  --nav:64px;
+  --safe-top:env(safe-area-inset-top,0px);
+  --safe-bot:env(safe-area-inset-bottom,0px);
+}
+[data-theme=light]{
+  --bg:#f0f2ff;--surface:#fff;--s2:#f6f7ff;--s3:#eaedff;
+  --text:#111326;--t2:#545c8a;--t3:#aab3d6;
+  --border:rgba(123,111,240,0.12);
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);overflow:hidden}
+svg{display:block;flex-shrink:0}
+
+/* ── LAYOUT ─────────────────────────── */
+#app{display:flex;flex-direction:column;height:100%;max-width:480px;margin:0 auto;position:relative}
+@media(min-width:760px){
+  #app{max-width:100%;flex-direction:row}
+  #sb{display:flex!important;flex-direction:column;width:252px;min-width:252px;background:var(--surface);border-right:1px solid var(--border)}
+  #bnav{display:none!important}
+  #mc{flex:1;overflow-y:auto}
+  #fab{bottom:28px;right:28px}
+}
+
+/* ── HEADER ─────────────────────────── */
+#hdr{
+  background:var(--surface);
+  /* Telegram + notch uchun bo'sh joy */
+  padding-top:calc(var(--safe-top) + 18px);
+  padding-bottom:14px;padding-left:18px;padding-right:18px;
+  display:flex;align-items:center;justify-content:space-between;
+  border-bottom:1px solid var(--border);
+  position:sticky;top:0;z-index:20;
+  min-height:calc(var(--safe-top) + 60px);
+}
+.hlogo{font-size:18px;font-weight:900;letter-spacing:-.4px}
+.hlogo b{color:var(--accent)}
+.hbtns{display:flex;gap:7px}
+.hbtn{width:37px;height:37px;border-radius:11px;background:var(--s2);border:1px solid var(--border);color:var(--t2);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:.2s}
+.hbtn:hover{background:var(--s3);color:var(--text)}
+
+/* ── BOTTOM NAV ─────────────────────── */
+#bnav{
+  position:fixed;bottom:0;left:50%;transform:translateX(-50%);
+  width:100%;max-width:480px;
+  background:var(--surface);border-top:1px solid var(--border);
+  display:flex;z-index:100;
+  padding-bottom:var(--safe-bot);
+  height:calc(var(--nav) + var(--safe-bot));
+}
+.ni{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:6px 2px;cursor:pointer;border:none;background:none;color:var(--t3);font-family:inherit;transition:.2s;position:relative}
+.ni.on{color:var(--accent)}
+.ni.on::after{content:'';position:absolute;bottom:4px;width:16px;height:3px;border-radius:2px;background:var(--accent)}
+.ni-lbl{font-size:9.5px;font-weight:700;letter-spacing:.2px}
+
+/* ── SIDEBAR ────────────────────────── */
+#sb{display:none}
+.sb-top{padding:28px 20px 18px;border-bottom:1px solid var(--border)}
+.sb-logo{font-size:17px;font-weight:900;letter-spacing:-.3px}
+.sb-logo b{color:var(--accent)}
+.sb-nav{padding:10px 10px;flex:1;display:flex;flex-direction:column;gap:1px}
+.sbi{display:flex;align-items:center;gap:11px;padding:10px 12px;border-radius:11px;cursor:pointer;color:var(--t2);font-size:13px;font-weight:600;transition:.2s;border:none;background:none;font-family:inherit;width:100%}
+.sbi.on{background:rgba(123,111,240,.1);color:var(--accent)}
+.sbi:hover{background:var(--s2);color:var(--text)}
+
+/* ── MAIN CONTENT ───────────────────── */
+#mc{
+  flex:1;overflow-y:auto;
+  /* nav + safe area uchun padding */
+  padding-bottom:calc(var(--nav) + var(--safe-bot) + 12px);
+}
+@media(min-width:760px){#mc{padding-bottom:20px}}
+.page{display:none}
+.page.on{display:block}
+
+/* ── SUMMARY CARDS ──────────────────── */
+.scrl{display:flex;gap:10px;padding:14px 16px;overflow-x:auto;scrollbar-width:none}
+.scrl::-webkit-scrollbar{display:none}
+.scard{min-width:134px;background:var(--surface);border-radius:15px;padding:13px 14px;border:1px solid var(--border);flex-shrink:0}
+.sc-ico{width:30px;height:30px;border-radius:9px;display:flex;align-items:center;justify-content:center;margin-bottom:9px}
+.scard.r .sc-ico{background:rgba(240,79,106,.1)}
+.scard.g .sc-ico{background:rgba(38,219,168,.08)}
+.scard.y .sc-ico{background:rgba(245,200,66,.08)}
+.scard.v .sc-ico{background:rgba(123,111,240,.1)}
+.sc-lbl{font-size:10px;color:var(--t2);font-weight:700;letter-spacing:.5px;margin-bottom:5px}
+.sc-val{font-size:16px;font-weight:800;letter-spacing:-.3px}
+.scard.r .sc-val{color:var(--red)}
+.scard.g .sc-val{color:var(--green)}
+.scard.y .sc-val{color:var(--yellow)}
+.scard.v .sc-val{color:var(--accent)}
+
+/* ── SEARCH ─────────────────────────── */
+.sbox{padding:0 16px 10px;position:relative}
+.sinp{width:100%;background:var(--surface);border:1.5px solid var(--border);border-radius:12px;padding:11px 14px 11px 40px;color:var(--text);font-size:14px;font-family:inherit;outline:none;transition:.2s}
+.sinp:focus{border-color:var(--accent)}
+.sico{position:absolute;left:28px;top:50%;transform:translateY(-50%);color:var(--t3)}
+
+/* ── CHIPS ──────────────────────────── */
+.chips{display:flex;gap:6px;padding:0 16px 12px;overflow-x:auto;scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chip{padding:7px 13px;border-radius:20px;background:var(--surface);border:1.5px solid var(--border);font-size:11.5px;font-weight:700;color:var(--t2);cursor:pointer;white-space:nowrap;transition:.2s;display:flex;align-items:center;gap:5px;font-family:inherit;flex-shrink:0}
+.chip.on{background:rgba(123,111,240,.1);border-color:var(--accent);color:var(--accent)}
+
+/* ── SECTION TITLE ──────────────────── */
+.stit{padding:0 16px 8px;font-size:11px;font-weight:700;color:var(--t3);letter-spacing:.8px;text-transform:uppercase}
+
+/* ── CUSTOMER CARD ──────────────────── */
+.clist{padding:0 16px;display:flex;flex-direction:column;gap:9px}
+.ccard{background:var(--surface);border-radius:var(--r);padding:15px;border:1px solid var(--border);cursor:pointer;transition:.2s;position:relative;overflow:hidden}
+.ccard:hover{border-color:rgba(123,111,240,.35);transform:translateY(-1px);box-shadow:0 6px 24px rgba(0,0,0,.25)}
+.ccard:active{transform:scale(.99)}
+.ccard::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;border-radius:2px 0 0 2px;background:var(--accent)}
+.ccard.prepaid::before{background:var(--green)}
+.ccard.zero::before{background:var(--t3)}
+.ct{display:flex;align-items:center;gap:11px}
+.cav{width:44px;height:44px;border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;color:#fff;flex-shrink:0;letter-spacing:-.3px}
+.cinf{flex:1;min-width:0}
+.cname{font-size:14.5px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;letter-spacing:-.2px}
+.csub{font-size:11.5px;color:var(--t3);margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:flex;align-items:center;gap:4px}
+.cdbt{text-align:right;flex-shrink:0}
+.cdv{font-size:15px;font-weight:800;letter-spacing:-.3px}
+.cdv.pos{color:var(--red)}
+.cdv.neg{color:var(--green)}
+.cdv.zer{color:var(--t3)}
+.cdl{font-size:10px;color:var(--t3);font-weight:600;margin-top:2px}
+.cacts{display:flex;gap:6px;margin-top:11px;padding-top:11px;border-top:1px solid var(--border)}
+.cact{flex:1;padding:9px 5px;border-radius:10px;border:none;cursor:pointer;font-family:inherit;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:4px;transition:.2s}
+.cact.call{background:rgba(38,219,168,.08);color:var(--green)}
+.cact.sell{background:rgba(245,200,66,.08);color:var(--yellow)}
+.cact.pay{background:rgba(123,111,240,.1);color:var(--accent)}
+.cact.edit{background:rgba(123,111,240,.07);color:var(--t2)}
+.cact:active{transform:scale(.95)}
+
+/* ── FAB ────────────────────────────── */
+#fab{
+  position:fixed;
+  bottom:calc(var(--nav) + var(--safe-bot) + 14px);
+  right:16px;
+  width:52px;height:52px;border-radius:16px;
+  background:linear-gradient(135deg,var(--accent),#9a80ff);
+  border:none;color:#fff;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 8px 24px rgba(123,111,240,.5);
+  z-index:99;transition:.2s
+}
+#fab:active{transform:scale(.94)}
+
+/* ── OVERLAY / MODAL ────────────────── */
+.ov{
+  position:fixed;inset:0;background:rgba(0,0,0,.72);z-index:200;
+  display:flex;align-items:flex-end;justify-content:center;
+  opacity:0;pointer-events:none;transition:opacity .25s;
+}
+.ov.open{opacity:1;pointer-events:all}
+.modal{
+  background:var(--surface);width:100%;max-width:480px;
+  border-radius:22px 22px 0 0;max-height:94vh;overflow-y:auto;
+  transform:translateY(100%);transition:transform .3s cubic-bezier(.3,1.04,.68,1.01);
+  padding-bottom:calc(var(--safe-bot) + 8px);
+}
+.ov.open .modal{transform:translateY(0)}
+@media(min-width:760px){
+  .ov{align-items:center}
+  .modal{border-radius:20px;max-width:500px;max-height:88vh;padding-bottom:0}
+}
+.mh{width:36px;height:4px;background:var(--s3);border-radius:2px;margin:11px auto 0}
+.mhd{padding:14px 18px 0;display:flex;align-items:center;justify-content:space-between}
+.mttl{font-size:16px;font-weight:800;letter-spacing:-.2px;display:flex;align-items:center;gap:8px}
+.mcls{width:33px;height:33px;border-radius:9px;background:var(--s2);border:1px solid var(--border);color:var(--t2);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:.2s}
+.mcls:hover{background:var(--s3);color:var(--text)}
+.mbody{padding:16px 18px}
+
+/* ── FORM ───────────────────────────── */
+.fg{margin-bottom:13px}
+.fl{display:block;font-size:10.5px;font-weight:700;color:var(--t2);margin-bottom:5px;letter-spacing:.5px;text-transform:uppercase}
+.fi{width:100%;background:var(--s2);border:1.5px solid var(--border);border-radius:11px;padding:12px 13px;color:var(--text);font-size:15px;font-family:inherit;outline:none;transition:.2s}
+.fi:focus{border-color:var(--accent)}
+.fi.ro{opacity:.6;cursor:not-allowed;background:var(--s3)}
+textarea.fi{min-height:70px;resize:vertical}
+.fi-big{font-size:22px;font-weight:800;letter-spacing:-.4px}
+
+.btn{border:none;border-radius:11px;font-family:inherit;font-weight:700;cursor:pointer;transition:.2s;display:flex;align-items:center;justify-content:center;gap:7px;font-size:14px}
+.btn:active{transform:scale(.97)}
+.btn-p{background:linear-gradient(135deg,var(--accent),#9a80ff);color:#fff;padding:14px 18px;width:100%;font-size:14.5px}
+.btn-s{background:var(--s2);border:1px solid var(--border);color:var(--text);padding:11px 15px}
+.btn-d{background:rgba(240,79,106,.1);color:var(--red);padding:11px 15px}
+.btn-g{background:rgba(38,219,168,.1);color:var(--green);padding:11px 15px;font-size:13px;width:auto;border:none}
+
+/* ── INFO ROWS ──────────────────────── */
+.ir{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid var(--border)}
+.ir:last-child{border-bottom:none}
+.irl{font-size:12.5px;color:var(--t2)}
+.irv{font-size:13px;font-weight:700}
+
+/* ── PAY TYPES ──────────────────────── */
+.ptypes{display:flex;gap:7px;margin-top:8px}
+.pt{flex:1;padding:10px 5px;border-radius:10px;background:var(--s2);border:2px solid transparent;cursor:pointer;text-align:center;font-size:11.5px;font-weight:700;color:var(--t2);transition:.2s;display:flex;flex-direction:column;align-items:center;gap:4px;font-family:inherit}
+.pt.on{border-color:var(--accent);color:var(--accent);background:rgba(123,111,240,.07)}
+
+/* ── IMAGE ──────────────────────────── */
+.imwrap{position:relative;display:inline-block}
+.imthumb{width:68px;height:68px;border-radius:10px;object-fit:cover;border:2px solid var(--border);cursor:pointer}
+.imdel{position:absolute;top:-6px;right:-6px;width:20px;height:20px;border-radius:50%;background:var(--red);border:none;color:#fff;font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-family:inherit;line-height:1}
+.imrow{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.cmbtn{background:rgba(123,111,240,.1);color:var(--accent);border:1px solid rgba(123,111,240,.2);border-radius:10px;padding:10px 13px;font-family:inherit;font-size:12.5px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:7px;transition:.2s}
+.cmbtn:hover{background:rgba(123,111,240,.18)}
+
+/* ── DETAIL HERO ────────────────────── */
+.dhero{padding:22px 18px 26px;position:relative;text-align:center}
+.dav{width:60px;height:60px;border-radius:18px;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:800;color:#fff;margin:0 auto 11px;border:2px solid rgba(255,255,255,.2)}
+.dname{font-size:19px;font-weight:800;color:#fff;letter-spacing:-.3px}
+.dsub{font-size:12px;color:rgba(255,255,255,.6);margin-top:4px}
+.damt{font-size:28px;font-weight:900;color:#fff;margin-top:12px;letter-spacing:-.5px}
+.damtl{font-size:11px;color:rgba(255,255,255,.55);margin-top:3px;font-weight:600}
+.dcls{position:absolute;top:13px;right:13px;width:33px;height:33px;background:rgba(255,255,255,.15);border:none;color:#fff;border-radius:9px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+
+/* ── TX CARD ────────────────────────── */
+.txlist{padding:0 16px;display:flex;flex-direction:column;gap:8px}
+.txcard{background:var(--surface);border-radius:13px;padding:13px;border:1px solid var(--border);display:flex;align-items:center;gap:11px;cursor:pointer;transition:.2s}
+.txcard:hover{border-color:rgba(123,111,240,.3)}
+.txcard:active{transform:scale(.98)}
+.txic{width:38px;height:38px;border-radius:11px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.txic.s{background:rgba(245,200,66,.1)}
+.txic.p{background:rgba(38,219,168,.08)}
+.txinf{flex:1;min-width:0}
+.txnm{font-size:13.5px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.txdt{font-size:11px;color:var(--t3);margin-top:2px}
+.txam{font-size:14.5px;font-weight:800;letter-spacing:-.2px}
+.txam.s{color:var(--yellow)}
+.txam.p{color:var(--green)}
+
+/* ── REPORT TABS ────────────────────── */
+.rtabs{display:flex;gap:6px;padding:12px 16px;overflow-x:auto;scrollbar-width:none}
+.rtabs::-webkit-scrollbar{display:none}
+.rtab{padding:8px 15px;border-radius:20px;background:var(--surface);border:1.5px solid var(--border);font-size:11.5px;font-weight:700;color:var(--t2);cursor:pointer;white-space:nowrap;transition:.2s;font-family:inherit}
+.rtab.on{background:rgba(123,111,240,.1);border-color:var(--accent);color:var(--accent)}
+
+/* ── CHART ──────────────────────────── */
+.cbox{background:var(--surface);border-radius:var(--r);padding:17px;margin:0 16px 13px;border:1px solid var(--border)}
+.cttl{font-size:13px;font-weight:700;color:var(--t2);margin-bottom:13px}
+.bars{display:flex;align-items:flex-end;gap:8px;height:100px}
+.barw{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;height:100%}
+.bar{width:100%;border-radius:5px 5px 0 0;min-height:3px;transition:.5s}
+.barl{font-size:9.5px;color:var(--t3);font-weight:600;text-align:center}
+.pierow{display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+.pielegs{display:flex;flex-direction:column;gap:8px}
+.pieleg{display:flex;align-items:center;gap:7px;font-size:12px}
+.piedot{width:9px;height:9px;border-radius:50%;flex-shrink:0}
+
+/* ── SETTINGS ───────────────────────── */
+.stsc{padding:13px 16px}
+.sttl{font-size:10.5px;font-weight:700;color:var(--t3);letter-spacing:.8px;text-transform:uppercase;margin-bottom:9px}
+.stcard{background:var(--surface);border-radius:var(--r);border:1px solid var(--border);overflow:hidden}
+.sti{display:flex;align-items:center;gap:12px;padding:13px 15px;border-bottom:1px solid var(--border);cursor:pointer;transition:.2s}
+.sti:last-child{border-bottom:none}
+.sti:hover{background:var(--s2)}
+.stiico{width:34px;height:34px;border-radius:10px;background:rgba(123,111,240,.1);color:var(--accent);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.stitx{flex:1}
+.stit2{font-size:13.5px;font-weight:700}
+.stid{font-size:11.5px;color:var(--t3);margin-top:1px}
+.sticheck{color:var(--accent)}
+.toggle{width:42px;height:25px;border-radius:13px;background:var(--s3);position:relative;cursor:pointer;transition:.2s;flex-shrink:0}
+.toggle.on{background:var(--accent)}
+.toggle::after{content:'';position:absolute;width:19px;height:19px;border-radius:50%;background:#fff;top:3px;left:3px;transition:.25s;box-shadow:0 2px 5px rgba(0,0,0,.3)}
+.toggle.on::after{transform:translateX(17px)}
+
+/* ── EMPTY ──────────────────────────── */
+.empty{padding:44px 20px;text-align:center}
+.empty svg{opacity:.25;margin:0 auto 12px}
+.empty p{color:var(--t2);font-size:13.5px}
+
+/* ── PAGE HEADER ────────────────────── */
+.ph{padding:14px 16px 4px;display:flex;align-items:center;justify-content:space-between}
+.pht{font-size:18px;font-weight:800;letter-spacing:-.3px;display:flex;align-items:center;gap:8px}
+
+/* ── TOAST ──────────────────────────── */
+#toast{
+  position:fixed;
+  bottom:calc(var(--nav) + var(--safe-bot) + 14px);
+  left:50%;transform:translateX(-50%) translateY(8px);
+  background:var(--s3);color:var(--text);padding:11px 18px;
+  border-radius:12px;font-size:13px;font-weight:600;z-index:999;
+  opacity:0;transition:.3s;pointer-events:none;white-space:nowrap;
+  box-shadow:0 8px 28px rgba(0,0,0,.4);border:1px solid var(--border);
+  display:flex;align-items:center;gap:8px;
+}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* ── IMG VIEWER ─────────────────────── */
+#iv{position:fixed;inset:0;background:rgba(0,0,0,.96);z-index:400;display:none;align-items:center;justify-content:center}
+#iv.open{display:flex}
+#iv img{max-width:96%;max-height:92vh;border-radius:12px}
+.ivcl{position:absolute;top:18px;right:18px;width:38px;height:38px;background:rgba(255,255,255,.1);border:none;color:#fff;border-radius:11px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+
+/* ── MISC ───────────────────────────── */
+::-webkit-scrollbar{width:3px}
+::-webkit-scrollbar-thumb{background:var(--s3);border-radius:2px}
+.mt8{margin-top:8px}.mt12{margin-top:12px}.mt14{margin-top:14px}
+.frow{display:flex;gap:8px}
+.divrow{height:1px;background:var(--border);margin:10px 0}
+.badge{display:inline-flex;align-items:center;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:700}
+.badge.r{background:rgba(240,79,106,.12);color:var(--red)}
+.badge.g{background:rgba(38,219,168,.1);color:var(--green)}
+.today-dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--accent);margin-left:4px;vertical-align:middle}
+</style>
+</head>
+<body>
+<div id="app">
+
+<!-- ═══════ SIDEBAR (desktop) ═══════ -->
+<div id="sb">
+  <div class="sb-top">
+    <div class="sb-logo">Nasiya <b>Daftar</b></div>
+    <div style="font-size:11px;color:var(--t3);margin-top:3px">Qarzdorlik boshqaruvi</div>
+  </div>
+  <nav class="sb-nav">
+    <button class="sbi on" data-page="home">
+      <svg width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      Asosiy
+    </button>
+    <button class="sbi" data-page="customers">
+      <svg width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      Mijozlar
+    </button>
+    <button class="sbi" data-page="reports">
+      <svg width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+      Hisobotlar
+    </button>
+    <button class="sbi" data-page="sales">
+      <svg width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+      Sotuvlar
+    </button>
+    <button class="sbi" data-page="payments">
+      <svg width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+      To'lovlar
+    </button>
+    <button class="sbi" data-page="settings">
+      <svg width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
+      Sozlamalar
+    </button>
+  </nav>
+</div>
+
+<!-- ═══════ MAIN CONTENT ═══════ -->
+<div id="mc">
+  <div id="hdr">
+    <div class="hlogo">Nasiya <b>Daftar</b></div>
+    <div class="hbtns">
+      <button class="hbtn" onclick="nav('reports')">
+        <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+      </button>
+      <button class="hbtn" onclick="nav('settings')">
+        <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- ── HOME ── -->
+  <div class="page on" id="page-home">
+    <div class="scrl" id="sum-cards"></div>
+    <div class="sbox" style="position:relative">
+      <span class="sico"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg></span>
+      <input class="sinp" id="home-srch" type="text" placeholder="Mijoz qidirish..." oninput="renderHome()">
+    </div>
+    <div class="chips" id="home-chips">
+      <button class="chip on" data-filter="all">
+        <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><rect width="7" height="7" x="3" y="3" rx="1"/><rect width="7" height="7" x="14" y="3" rx="1"/><rect width="7" height="7" x="3" y="14" rx="1"/><rect width="7" height="7" x="14" y="14" rx="1"/></svg>
+        Barchasi
+      </button>
+      <button class="chip" data-filter="debt">
+        <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+        Qarzdorlar
+      </button>
+      <button class="chip" data-filter="prepaid">
+        <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+        Oldindan to'lagan
+      </button>
+      <button class="chip" data-filter="zero">
+        <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M8 12h8"/></svg>
+        Hisob-kitob
+      </button>
+    </div>
+    <div class="stit" id="home-cnt">0 ta mijoz</div>
+    <div class="clist" id="home-list"></div>
+  </div>
+
+  <!-- ── CUSTOMERS ── -->
+  <div class="page" id="page-customers">
+    <div class="ph">
+      <div class="pht">
+        <svg width="19" height="19" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        Mijozlar
+      </div>
+      <button class="btn btn-s" style="padding:8px 13px;font-size:12px" onclick="openAddCust()">
+        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+        Yangi mijoz
+      </button>
+    </div>
+    <div class="sbox" style="position:relative">
+      <span class="sico"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg></span>
+      <input class="sinp" id="cust-srch" type="text" placeholder="Qidirish..." oninput="renderCustPage()">
+    </div>
+    <div class="clist" id="cust-list"></div>
+  </div>
+
+  <!-- ── REPORTS ── -->
+  <div class="page" id="page-reports">
+    <div class="ph"><div class="pht"><svg width="19" height="19" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>Hisobotlar</div></div>
+    <div class="rtabs">
+      <button class="rtab on" data-rt="overview">Umumiy</button>
+      <button class="rtab" data-rt="debtors">Qarzdorlar</button>
+      <button class="rtab" data-rt="prepaid">Oldindan to'lagan</button>
+      <button class="rtab" data-rt="chart">Diagramma</button>
+    </div>
+    <div id="rep-body"></div>
+  </div>
+
+  <!-- ── SALES ── -->
+  <div class="page" id="page-sales">
+    <div class="ph"><div class="pht"><svg width="19" height="19" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>Sotuvlar</div></div>
+    <div class="chips" id="sales-chips">
+      <button class="chip on" data-sf="all">Barchasi</button>
+      <button class="chip" data-sf="today">Bugun</button>
+      <button class="chip" data-sf="week">Hafta</button>
+      <button class="chip" data-sf="month">Oy</button>
+    </div>
+    <div class="txlist" id="sales-list"></div>
+  </div>
+
+  <!-- ── PAYMENTS ── -->
+  <div class="page" id="page-payments">
+    <div class="ph"><div class="pht"><svg width="19" height="19" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>To'lovlar</div></div>
+    <div class="chips" id="pay-chips">
+      <button class="chip on" data-pf="all">Barchasi</button>
+      <button class="chip" data-pf="today">Bugun</button>
+      <button class="chip" data-pf="week">Hafta</button>
+      <button class="chip" data-pf="month">Oy</button>
+    </div>
+    <div class="txlist" id="pay-list"></div>
+  </div>
+
+  <!-- ── SETTINGS ── -->
+  <div class="page" id="page-settings">
+    <div class="ph"><div class="pht"><svg width="19" height="19" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>Sozlamalar</div></div>
+
+    <div class="stsc">
+      <div class="sttl">Til / Language</div>
+      <div class="stcard">
+        <div class="sti" onclick="setLang('uz')">
+          <div class="stiico" style="background:none;font-size:20px">🇺🇿</div>
+          <div class="stitx"><div class="stit2">O'zbekcha</div></div>
+          <svg id="lc-uz" width="16" height="16" fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" class="sticheck"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
+        <div class="sti" onclick="setLang('ru')">
+          <div class="stiico" style="background:none;font-size:20px">🇷🇺</div>
+          <div class="stitx"><div class="stit2">Русский</div></div>
+          <svg id="lc-ru" width="16" height="16" fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" class="sticheck" style="display:none"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
+        <div class="sti" onclick="setLang('en')">
+          <div class="stiico" style="background:none;font-size:20px">🇬🇧</div>
+          <div class="stitx"><div class="stit2">English</div></div>
+          <svg id="lc-en" width="16" height="16" fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" class="sticheck" style="display:none"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
+      </div>
+    </div>
+
+    <div class="stsc">
+      <div class="sttl">Ko'rinish</div>
+      <div class="stcard">
+        <div class="sti" onclick="toggleTheme()">
+          <div class="stiico"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9z"/></svg></div>
+          <div class="stitx"><div class="stit2">Qorong'u rejim</div></div>
+          <div class="toggle on" id="theme-tog"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="stsc">
+      <div class="sttl">Ma'lumotlar</div>
+      <div class="stcard">
+        <div class="sti" onclick="exportCSV()">
+          <div class="stiico"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></div>
+          <div class="stitx"><div class="stit2">CSV export</div><div class="stid">Mijozlar ro'yxatini yuklab olish</div></div>
+          <svg width="13" height="13" fill="none" stroke="var(--t3)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+        </div>
+        <div class="sti" onclick="resetData()">
+          <div class="stiico" style="background:rgba(240,79,106,.1);color:var(--red)"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></div>
+          <div class="stitx"><div class="stit2" style="color:var(--red)">Ma'lumotlarni tozalash</div><div class="stid">Test ma'lumotlarni o'chirish</div></div>
+          <svg width="13" height="13" fill="none" stroke="var(--t3)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+        </div>
+        <div class="sti" style="cursor:default">
+          <div class="stiico"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg></div>
+          <div class="stitx"><div class="stit2">Nasiya Daftar v2.0</div><div class="stid">Barcha huquqlar himoyalangan</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /mc -->
+
+<!-- ═══════ BOTTOM NAV ═══════ -->
+<div id="bnav">
+  <button class="ni on" id="ni-home" data-page="home">
+    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+    <span class="ni-lbl">Asosiy</span>
+  </button>
+  <button class="ni" id="ni-customers" data-page="customers">
+    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+    <span class="ni-lbl">Mijozlar</span>
+  </button>
+  <button class="ni" id="ni-reports" data-page="reports">
+    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+    <span class="ni-lbl">Hisobot</span>
+  </button>
+  <button class="ni" id="ni-sales" data-page="sales">
+    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+    <span class="ni-lbl">Sotuvlar</span>
+  </button>
+  <button class="ni" id="ni-settings" data-page="settings">
+    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
+    <span class="ni-lbl">Sozlama</span>
+  </button>
+</div>
+
+<!-- FAB -->
+<button id="fab" onclick="openAddCust()">
+  <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+</button>
+
+</div><!-- /app -->
+
+<!-- ═══════════════ MODALS ═══════════════ -->
+
+<!-- ADD/EDIT CUSTOMER -->
+<div class="ov" id="ov-cust">
+  <div class="modal">
+    <div class="mh"></div>
+    <div class="mhd">
+      <div class="mttl">
+        <svg width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        <span id="cust-modal-ttl">Yangi mijoz</span>
+      </div>
+      <button class="mcls" onclick="closeOv('ov-cust')"><svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button>
+    </div>
+    <div class="mbody">
+      <input type="hidden" id="cust-edit-id">
+      <div class="fg"><label class="fl">Ism va familiya *</label><input class="fi" id="cf-name" type="text" placeholder="Ahmadjon Toshmatov"></div>
+      <div class="fg"><label class="fl">Telefon raqami</label><input class="fi" id="cf-phone" type="tel" placeholder="+998 90 123 45 67"></div>
+      <div class="fg"><label class="fl">Manzil</label><input class="fi" id="cf-addr" type="text" placeholder="Ko'cha, uy raqami"></div>
+      <div class="fg"><label class="fl">Joylashuv / Tuman</label><input class="fi" id="cf-loc" type="text" placeholder="Toshkent, Chilonzor"></div>
+      <div class="fg"><label class="fl">Boshlang'ich qarz (so'm)</label><input class="fi" id="cf-debt" type="number" placeholder="0" min="0"></div>
+      <button class="btn btn-p mt12" id="cust-save-btn" onclick="saveCust()">
+        <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+        Saqlash
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- CUSTOMER DETAIL -->
+<div class="ov" id="ov-cdetail">
+  <div class="modal" style="max-height:96vh">
+    <div id="cd-hero"></div>
+    <div class="mbody" id="cd-body"></div>
+  </div>
+</div>
+
+<!-- NEW / EDIT SALE -->
+<div class="ov" id="ov-sale">
+  <div class="modal">
+    <div class="mh"></div>
+    <div class="mhd">
+      <div class="mttl">
+        <svg width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+        <span id="sale-ttl">Yangi sotuv</span>
+      </div>
+      <button class="mcls" onclick="closeOv('ov-sale')"><svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button>
+    </div>
+    <div class="mbody">
+      <input type="hidden" id="sale-edit-id">
+      <input type="hidden" id="sale-cust-id">
+      <div id="sale-cinfo" style="background:var(--s2);border-radius:11px;padding:12px;margin-bottom:13px;border:1px solid var(--border)"></div>
+      <div class="fg"><label class="fl">Sotuv summasi (so'm) *</label>
+        <input class="fi fi-big" id="sf-amt" type="number" placeholder="0" min="0">
+      </div>
+      <div class="fg"><label class="fl">Izoh / Mahsulot nomi</label>
+        <input class="fi" id="sf-note" type="text" placeholder="Nima sotdingiz?">
+      </div>
+      <div class="fg">
+        <label class="fl">Rasmlar (ixtiyoriy)</label>
+        <div style="display:flex;gap:7px;flex-wrap:wrap;margin-top:7px">
+          <button class="cmbtn" onclick="document.getElementById('cam-in').click()">
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg>
+            Kamera
+          </button>
+          <button class="cmbtn" onclick="document.getElementById('file-in').click()">
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><polyline points="21 15 16 10 5 21"/></svg>
+            Galereya
+          </button>
+        </div>
+        <input type="file" id="cam-in" accept="image/*" capture="environment" style="display:none" onchange="addImgs(event)">
+        <input type="file" id="file-in" accept="image/*" multiple style="display:none" onchange="addImgs(event)">
+        <div id="sale-imgs" class="imrow"></div>
+      </div>
+      <button class="btn btn-p mt8" onclick="saveSale()">
+        <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+        Saqlash
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- PAYMENT -->
+<div class="ov" id="ov-pay">
+  <div class="modal">
+    <div class="mh"></div>
+    <div class="mhd">
+      <div class="mttl">
+        <svg width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+        <span id="pay-ttl">To'lov kiritish</span>
+      </div>
+      <button class="mcls" onclick="closeOv('ov-pay')"><svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button>
+    </div>
+    <div class="mbody">
+      <input type="hidden" id="pay-edit-id">
+      <input type="hidden" id="pay-cust-id">
+      <div id="pay-cinfo" style="background:var(--s2);border-radius:11px;padding:12px;margin-bottom:13px;border:1px solid var(--border)"></div>
+      <div class="fg"><label class="fl">Jami qarz</label><input class="fi ro" id="pf-total" disabled type="text"></div>
+      <div class="fg">
+        <label class="fl">To'lov summasi (so'm) *</label>
+        <input class="fi fi-big" id="pf-amt" type="number" placeholder="0" min="0" oninput="calcRem()">
+        <button class="btn btn-g mt8" onclick="setFullPay()">
+          <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+          To'liq to'lash
+        </button>
+      </div>
+      <div class="fg">
+        <label class="fl">To'lov turi</label>
+        <div class="ptypes">
+          <button class="pt on" data-pt="cash">
+            <svg width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><rect width="20" height="12" x="2" y="6" rx="2"/><circle cx="12" cy="12" r="2"/><path d="M6 12h.01M18 12h.01"/></svg>
+            Naqd
+          </button>
+          <button class="pt" data-pt="bank">
+            <svg width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><line x1="3" y1="22" x2="21" y2="22"/><line x1="6" y1="18" x2="6" y2="11"/><line x1="10" y1="18" x2="10" y2="11"/><line x1="14" y1="18" x2="14" y2="11"/><line x1="18" y1="18" x2="18" y2="11"/><polygon points="12 2 20 7 4 7"/></svg>
+            Bank
+          </button>
+          <button class="pt" data-pt="click">
+            <svg width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><rect width="14" height="20" x="5" y="2" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
+            Click/Payme
+          </button>
+        </div>
+      </div>
+      <div class="fg"><label class="fl">Izoh</label><input class="fi" id="pf-note" type="text" placeholder="..."></div>
+      <div style="background:var(--s2);border-radius:11px;padding:12px;margin-bottom:13px;border:1px solid var(--border)">
+        <div class="ir"><span class="irl">Qoldiq qarz:</span><span class="irv" id="pay-rem">—</span></div>
+      </div>
+      <button class="btn btn-p" onclick="savePay()">
+        <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+        To'lovni saqlash
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- TX DETAIL -->
+<div class="ov" id="ov-txd">
+  <div class="modal">
+    <div class="mh"></div>
+    <div class="mhd">
+      <div class="mttl" id="txd-ttl">Batafsil</div>
+      <button class="mcls" onclick="closeOv('ov-txd')"><svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button>
+    </div>
+    <div class="mbody" id="txd-body"></div>
+  </div>
+</div>
+
+<!-- IMAGE VIEWER -->
+<div id="iv">
+  <img id="iv-img" src="" alt="">
+  <button class="ivcl" onclick="closeIV()"><svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button>
+</div>
+
+<div id="toast"></div>
+
+<script>
+// ═══════ DATA ═══════════════════════════════════════════
+let DB = { customers:[], sales:[], payments:[] };
+let lang = 'uz';
+let dark = true;
+let homeFilter = 'all';
+let salesFilter = 'all';
+let paysFilter = 'all';
+let curPT = 'cash';
+let saleImgsBuf = [];
+let activeRT = 'overview';
+let curCustId = null;
+
+// ─── Colour palette for avatars ─────────────────────────
+const PAL = ['#7b6ff0','#e8649a','#26dba8','#f5a623','#60afff','#f97316','#a78bfa','#34d399','#f87171','#4ade80'];
+function custCol(id) {
+  const i = DB.customers.findIndex(c=>c.id===id);
+  return PAL[Math.abs(i) % PAL.length];
+}
+
+// ─── Utilities ──────────────────────────────────────────
+const M = n => Math.abs(n||0).toLocaleString('uz-UZ') + " so'm";
+const MS = n => n===0 ? "0 so'm" : (n>0?'+':'-') + Math.abs(n).toLocaleString('uz-UZ') + " so'm";
+const uid = () => '_'+Date.now()+'_'+Math.random().toString(36).slice(2,7);
+const today = () => new Date().toISOString().slice(0,10);
+const fmtD = d => { if(!d) return ''; return new Date(d).toLocaleDateString('uz-UZ',{day:'2-digit',month:'short',year:'numeric'}); };
+const isToday = d => d === today();
+const isWeek  = d => d && (Date.now()-new Date(d).getTime()) < 7*864e5;
+const isMonth = d => d && d.startsWith(new Date().toISOString().slice(0,7));
+const ini = n => (n||'?').split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
+const gc  = id => DB.customers.find(c=>c.id===id);
+
+// SVG helpers
+const SVGS = {
+  phone:`<svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.44A2 2 0 0 1 3.6 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l.81-.81a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 17z"/></svg>`,
+  bag:`<svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>`,
+  card:`<svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>`,
+  edit:`<svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M17 3a2.85 2.85 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>`,
+  del:`<svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>`,
+  loc:`<svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>`,
+};
+
+// ═══════ INIT DATA ══════════════════════════════════════
+function initTest(){
+  DB.customers=[
+    {id:'c1',name:'Ahmadjon Toshmatov',phone:'+998901234567',address:'Chilonzor, 12-uy',location:'Toshkent',initialDebt:150000,debt:320000,createdAt:'2024-01-15'},
+    {id:'c2',name:'Malika Yusupova',phone:'+998931234567',address:'Yunusobod, 5-ko\'cha',location:'Toshkent',initialDebt:0,debt:85000,createdAt:'2024-02-20'},
+    {id:'c3',name:'Bahodir Rahimov',phone:'+998901111222',address:'Namangan, Uychi',location:'Namangan',initialDebt:50000,debt:-30000,createdAt:'2024-03-01'},
+    {id:'c4',name:'Zulfiya Karimova',phone:'+998903334455',address:'Samarqand, Registon',location:'Samarqand',initialDebt:0,debt:0,createdAt:'2024-03-10'},
+    {id:'c5',name:'Dilshod Mirzayev',phone:'+998907776655',address:'Fergana, Markaziy',location:'Fergana',initialDebt:200000,debt:550000,createdAt:'2024-04-05'},
+  ];
+  DB.sales=[
+    {id:'s1',custId:'c1',custName:'Ahmadjon Toshmatov',amount:170000,note:'Telefon aksessuarlari',imgs:[],date:today(),prevDebt:150000},
+    {id:'s2',custId:'c2',custName:'Malika Yusupova',amount:85000,note:'Kiyim',imgs:[],date:today(),prevDebt:0},
+    {id:'s3',custId:'c5',custName:'Dilshod Mirzayev',amount:350000,note:'Maishiy texnika',imgs:[],date:'2024-05-14',prevDebt:200000},
+  ];
+  DB.payments=[
+    {id:'p1',custId:'c3',custName:'Bahodir Rahimov',amount:80000,note:'Bank',date:'2024-05-11',payType:'bank',prevDebt:50000},
+    {id:'p2',custId:'c1',custName:'Ahmadjon Toshmatov',amount:50000,note:'Naqd',date:today(),payType:'cash',prevDebt:370000},
+  ];
+  saveDB();
+}
+function loadDB(){ try{ const s=localStorage.getItem('nd2'); if(s) DB=JSON.parse(s); else initTest(); }catch(e){ initTest(); } }
+function saveDB(){ localStorage.setItem('nd2',JSON.stringify(DB)); }
+
+// ═══════ NAVIGATION ═════════════════════════════════════
+function nav(p){
+  document.querySelectorAll('.page').forEach(x=>x.classList.remove('on'));
+  document.getElementById('page-'+p).classList.add('on');
+  document.querySelectorAll('.ni,.sbi').forEach(x=>x.classList.remove('on'));
+  const ni=document.getElementById('ni-'+p); if(ni) ni.classList.add('on');
+  document.querySelectorAll('.sbi').forEach(x=>{ if((x.dataset.page||''===p)) x.classList.add('on'); });
+  if(p==='home')     { renderSumCards(); renderHome(); }
+  if(p==='customers') renderCustPage();
+  if(p==='reports')  renderReports();
+  if(p==='sales')    renderTxList('sales');
+  if(p==='payments') renderTxList('payments');
+}
+
+// ═══════ HOME PAGE ═══════════════════════════════════════
+function renderSumCards(){
+  const debt   = DB.customers.reduce((s,c)=>s+(c.debt>0?c.debt:0),0);
+  const pre    = DB.customers.reduce((s,c)=>s+(c.debt<0?Math.abs(c.debt):0),0);
+  const nd     = DB.customers.filter(c=>c.debt>0).length;
+  const total  = DB.customers.length;
+  document.getElementById('sum-cards').innerHTML=`
+    <div class="scard r"><div class="sc-ico"><svg width="15" height="15" fill="none" stroke="var(--red)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div><div class="sc-lbl">JAMI QARZ</div><div class="sc-val">${M(debt)}</div></div>
+    <div class="scard y"><div class="sc-ico"><svg width="15" height="15" fill="none" stroke="var(--yellow)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div><div class="sc-lbl">QARZDORLAR</div><div class="sc-val">${nd} ta</div></div>
+    <div class="scard g"><div class="sc-ico"><svg width="15" height="15" fill="none" stroke="var(--green)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div><div class="sc-lbl">OLDINDAN TO'LAGAN</div><div class="sc-val">${M(pre)}</div></div>
+    <div class="scard v"><div class="sc-ico"><svg width="15" height="15" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="23" y1="11" x2="17" y2="11"/></svg></div><div class="sc-lbl">JAMI MIJOZ</div><div class="sc-val">${total} ta</div></div>
+  `;
+}
+
+function renderHome(){
+  const q=(document.getElementById('home-srch').value||'').toLowerCase();
+  let list=DB.customers.filter(c=>{
+    const m=c.name.toLowerCase().includes(q)||(c.phone||'').includes(q)||(c.address||'').toLowerCase().includes(q);
+    if(!m) return false;
+    if(homeFilter==='debt') return c.debt>0;
+    if(homeFilter==='prepaid') return c.debt<0;
+    if(homeFilter==='zero') return c.debt===0;
+    return true;
+  });
+  document.getElementById('home-cnt').textContent=list.length+' ta mijoz';
+  const el=document.getElementById('home-list');
+  el.innerHTML=list.length ? list.map(c=>buildCard(c,true)).join('') : emptyHtml('👥','Mijoz topilmadi');
+}
+
+function buildCard(c, showActs){
+  const col=custCol(c.id);
+  const dc=c.debt>0?'pos':c.debt<0?'neg':'zer';
+  const cc=c.debt<0?'prepaid':c.debt===0?'zero':'';
+  const dlbl=c.debt>0?'Joriy qarz':c.debt<0?"Oldindan to'lagan":'Hisob-kitob';
+  const acts=showActs?`
+    <div class="cacts" onclick="event.stopPropagation()">
+      <button class="cact call" onclick="callC('${c.phone}')">${SVGS.phone} Qo'ng'iroq</button>
+      <button class="cact sell" onclick="openSale('${c.id}')">${SVGS.bag} Sotuv</button>
+      <button class="cact pay"  onclick="openPay('${c.id}')">${SVGS.card} To'lov</button>
+    </div>`:'';
+  return `
+    <div class="ccard ${cc}" onclick="openCDetail('${c.id}')">
+      <div class="ct">
+        <div class="cav" style="background:linear-gradient(135deg,${col},${col}bb)">${ini(c.name)}</div>
+        <div class="cinf">
+          <div class="cname">${c.name}</div>
+          <div class="csub">${SVGS.loc} ${c.address||'—'}</div>
+        </div>
+        <div class="cdbt">
+          <div class="cdv ${dc}">${M(Math.abs(c.debt))}</div>
+          <div class="cdl">${dlbl}</div>
+        </div>
+      </div>
+      ${acts}
+    </div>`;
+}
+
+// ═══════ CUSTOMERS PAGE ══════════════════════════════════
+function renderCustPage(){
+  const q=(document.getElementById('cust-srch').value||'').toLowerCase();
+  const list=DB.customers.filter(c=>
+    c.name.toLowerCase().includes(q)||(c.phone||'').includes(q)||(c.address||'').toLowerCase().includes(q)
+  );
+  const el=document.getElementById('cust-list');
+  if(!list.length){ el.innerHTML=emptyHtml('👥','Mijoz topilmadi'); return; }
+  el.innerHTML=list.map(c=>{
+    const col=custCol(c.id);
+    const dc=c.debt>0?'pos':c.debt<0?'neg':'zer';
+    return `
+      <div class="ccard" onclick="openCDetail('${c.id}')">
+        <div class="ct">
+          <div class="cav" style="background:linear-gradient(135deg,${col},${col}bb)">${ini(c.name)}</div>
+          <div class="cinf">
+            <div class="cname">${c.name}</div>
+            <div class="csub">${c.phone||'—'}</div>
+          </div>
+          <div class="cdbt">
+            <div class="cdv ${dc}">${M(Math.abs(c.debt))}</div>
+            <div class="cdl">${c.debt>0?'Qarz':c.debt<0?'Ortiqcha':'✓'}</div>
+          </div>
+        </div>
+        <div class="cacts" onclick="event.stopPropagation()">
+          <button class="cact call" onclick="callC('${c.phone}')">${SVGS.phone} Qo'ng'iroq</button>
+          <button class="cact sell" onclick="openSale('${c.id}')">${SVGS.bag} Sotuv</button>
+          <button class="cact pay"  onclick="openPay('${c.id}')">${SVGS.card} To'lov</button>
+          <button class="cact edit" onclick="editCust('${c.id}')" style="color:var(--accent)">${SVGS.edit} Tahrir</button>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+// ═══════ CUSTOMER DETAIL ═════════════════════════════════
+function openCDetail(id){
+  curCustId=id;
+  const c=gc(id); if(!c) return;
+  const col=custCol(id);
+  const sales=DB.sales.filter(s=>s.custId===id).slice().reverse();
+  const pays=DB.payments.filter(p=>p.custId===id).slice().reverse();
+
+  document.getElementById('cd-hero').innerHTML=`
+    <div class="dhero" style="background:linear-gradient(145deg,${col}cc,${col})">
+      <button class="dcls" onclick="closeOv('ov-cdetail')"><svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button>
+      <div class="dav">${ini(c.name)}</div>
+      <div class="dname">${c.name}</div>
+      <div class="dsub">📍 ${c.address||''} ${c.location?'· '+c.location:''}</div>
+      <div class="damt">${c.debt<0?'-':''}${M(Math.abs(c.debt))}</div>
+      <div class="damtl">${c.debt>0?'Joriy qarz':c.debt<0?"Oldindan to'lagan":'Hisob-kitob'}</div>
+    </div>`;
+
+  const txRow=(tx,type)=>{
+    const iS=type==='sale';
+    return `<div class="txcard" onclick="openTxDetail('${type}','${tx.id}')">
+      <div class="txic ${iS?'s':'p'}">${iS
+        ?'<svg width="15" height="15" fill="none" stroke="var(--yellow)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>'
+        :'<svg width="15" height="15" fill="none" stroke="var(--green)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>'
+      }</div>
+      <div class="txinf">
+        <div class="txnm">${tx.note||tx.payType||(iS?'Sotuv':"To'lov")}</div>
+        <div class="txdt">${fmtD(tx.date)}${isToday(tx.date)?'<span class="today-dot"></span>':''}</div>
+      </div>
+      <div style="text-align:right">
+        <div class="txam ${iS?'s':'p'}">${iS?'+':'-'}${M(tx.amount)}</div>
+        ${isToday(tx.date)?'<div style="font-size:10px;color:var(--accent);margin-top:2px">Tahrirlash →</div>':''}
+      </div>
+    </div>`;
+  };
+
+  document.getElementById('cd-body').innerHTML=`
+    <div class="frow mt8" style="margin-bottom:13px">
+      <button class="btn btn-s" style="flex:1;font-size:12px;padding:9px 5px" onclick="callC('${c.phone}')">${SVGS.phone} Qo'ng'iroq</button>
+      <button class="btn" style="flex:1;font-size:12px;padding:9px 5px;background:rgba(245,200,66,.09);color:var(--yellow)" onclick="closeOv('ov-cdetail');openSale('${c.id}')">${SVGS.bag} Sotuv</button>
+      <button class="btn btn-p" style="flex:1;font-size:12px;padding:9px 5px" onclick="closeOv('ov-cdetail');openPay('${c.id}')">${SVGS.card} To'lov</button>
+    </div>
+    <div style="background:var(--s2);border-radius:13px;padding:13px;margin-bottom:13px;border:1px solid var(--border)">
+      <div class="ir"><span class="irl">📞 Telefon</span><span class="irv">${c.phone||'—'}</span></div>
+      <div class="ir"><span class="irl">📍 Manzil</span><span class="irv">${c.address||'—'}</span></div>
+      <div class="ir"><span class="irl">🗺️ Joylashuv</span><span class="irv">${c.location||'—'}</span></div>
+      <div class="ir"><span class="irl">📅 Ro'yxatga olingan</span><span class="irv">${fmtD(c.createdAt)}</span></div>
+      <div class="ir"><span class="irl">💰 Boshlang'ich qarz</span><span class="irv" style="color:var(--yellow)">${M(c.initialDebt||0)}</span></div>
+      <div class="ir"><span class="irl">📊 Joriy qarz</span><span class="irv" style="color:${c.debt>0?'var(--red)':c.debt<0?'var(--green)':'var(--t2)'}">${c.debt<0?'-':''}${M(Math.abs(c.debt))}</span></div>
+    </div>
+    <div style="font-size:11.5px;font-weight:700;color:var(--t2);margin-bottom:8px">🛍️ So'nggi sotuvlar</div>
+    ${sales.length?sales.slice(0,5).map(s=>txRow(s,'sale')).join(''):'<div style="color:var(--t3);font-size:13px;padding:6px 0 10px">Sotuvlar yo\'q</div>'}
+    <div style="font-size:11.5px;font-weight:700;color:var(--t2);margin:12px 0 8px">💳 So'nggi to'lovlar</div>
+    ${pays.length?pays.slice(0,5).map(p=>txRow(p,'payment')).join(''):'<div style="color:var(--t3);font-size:13px;padding:6px 0">To\'lovlar yo\'q</div>'}
+  `;
+  openOv('ov-cdetail');
+}
+
+// ═══════ ADD / EDIT CUSTOMER ═════════════════════════════
+function openAddCust(){
+  document.getElementById('cust-edit-id').value='';
+  document.getElementById('cust-modal-ttl').textContent='Yangi mijoz';
+  ['cf-name','cf-phone','cf-addr','cf-loc'].forEach(i=>document.getElementById(i).value='');
+  document.getElementById('cf-debt').value='';
+  openOv('ov-cust');
+}
+function editCust(id){
+  const c=gc(id); if(!c) return;
+  document.getElementById('cust-edit-id').value=id;
+  document.getElementById('cust-modal-ttl').textContent='Mijozni tahrirlash';
+  document.getElementById('cf-name').value=c.name||'';
+  document.getElementById('cf-phone').value=c.phone||'';
+  document.getElementById('cf-addr').value=c.address||'';
+  document.getElementById('cf-loc').value=c.location||'';
+  document.getElementById('cf-debt').value=c.initialDebt||0;
+  openOv('ov-cust');
+}
+function saveCust(){
+  const name=document.getElementById('cf-name').value.trim();
+  if(!name){ toast('Ismni kiriting!'); return; }
+  const phone=document.getElementById('cf-phone').value.trim();
+  const addr=document.getElementById('cf-addr').value.trim();
+  const loc=document.getElementById('cf-loc').value.trim();
+  const initD=parseFloat(document.getElementById('cf-debt').value)||0;
+  const eid=document.getElementById('cust-edit-id').value;
+  if(eid){
+    const c=gc(eid); if(!c) return;
+    const diff=initD-(c.initialDebt||0);
+    c.name=name; c.phone=phone; c.address=addr; c.location=loc; c.initialDebt=initD; c.debt+=diff;
+    toast('Mijoz yangilandi ✓');
+  } else {
+    DB.customers.push({id:uid(),name,phone,address:addr,location:loc,initialDebt:initD,debt:initD,createdAt:today()});
+    toast('Mijoz qo\'shildi ✓');
+  }
+  saveDB();
+  closeOv('ov-cust');
+  renderSumCards(); renderHome(); renderCustPage();
+}
+
+// ═══════ SALE ════════════════════════════════════════════
+function openSale(custId, editId){
+  curCustId=custId; saleImgsBuf=[];
+  const c=gc(custId); if(!c) return;
+  document.getElementById('sale-cust-id').value=custId;
+  if(editId){
+    const s=DB.sales.find(x=>x.id===editId); if(!s) return;
+    document.getElementById('sale-edit-id').value=editId;
+    document.getElementById('sale-ttl').textContent='Sotuvni tahrirlash';
+    document.getElementById('sf-amt').value=s.amount;
+    document.getElementById('sf-note').value=s.note||'';
+    saleImgsBuf=[...(s.imgs||[])];
+  } else {
+    document.getElementById('sale-edit-id').value='';
+    document.getElementById('sale-ttl').textContent='Yangi sotuv';
+    document.getElementById('sf-amt').value='';
+    document.getElementById('sf-note').value='';
+  }
+  renderSaleImgs();
+  const col=custCol(custId);
+  document.getElementById('sale-cinfo').innerHTML=`
+    <div style="display:flex;align-items:center;gap:10px">
+      <div class="cav" style="width:36px;height:36px;font-size:12px;border-radius:10px;background:linear-gradient(135deg,${col},${col}bb)">${ini(c.name)}</div>
+      <div><div style="font-weight:700;font-size:13.5px">${c.name}</div>
+      <div style="font-size:11.5px;color:var(--t3)">Joriy qarz: <span style="color:${c.debt>0?'var(--red)':'var(--green)'}">${M(Math.abs(c.debt))}</span></div></div>
+    </div>`;
+  openOv('ov-sale');
+}
+function addImgs(e){
+  Array.from(e.target.files).forEach(f=>{
+    const r=new FileReader();
+    r.onload=ev=>{saleImgsBuf.push(ev.target.result);renderSaleImgs()};
+    r.readAsDataURL(f);
+  });
+  e.target.value='';
+}
+function renderSaleImgs(){
+  document.getElementById('sale-imgs').innerHTML=saleImgsBuf.map((img,i)=>
+    `<div class="imwrap"><img class="imthumb" src="${img}" onclick="openIV('${img}')"><button class="imdel" onclick="rmImg(${i})">×</button></div>`
+  ).join('');
+}
+function rmImg(i){ saleImgsBuf.splice(i,1); renderSaleImgs(); }
+function saveSale(){
+  const amt=parseFloat(document.getElementById('sf-amt').value);
+  if(!amt||amt<=0){ toast('Summani kiriting!'); return; }
+  const note=document.getElementById('sf-note').value.trim();
+  const custId=document.getElementById('sale-cust-id').value;
+  const eid=document.getElementById('sale-edit-id').value;
+  const c=gc(custId); if(!c) return;
+  if(eid){
+    const s=DB.sales.find(x=>x.id===eid); if(!s) return;
+    c.debt+=amt-s.amount; s.amount=amt; s.note=note; s.imgs=[...saleImgsBuf];
+    toast('Sotuv yangilandi ✓');
+  } else {
+    DB.sales.push({id:uid(),custId,custName:c.name,amount:amt,note,imgs:[...saleImgsBuf],date:today(),prevDebt:c.debt});
+    c.debt+=amt;
+    toast('Sotuv saqlandi ✓');
+  }
+  saveDB();
+  closeOv('ov-sale');
+  renderSumCards(); renderHome(); renderCustPage(); renderTxList('sales');
+}
+
+// ═══════ PAYMENT ═════════════════════════════════════════
+function openPay(custId, editId){
+  curCustId=custId; curPT='cash';
+  const c=gc(custId); if(!c) return;
+  document.getElementById('pay-cust-id').value=custId;
+  document.querySelectorAll('.pt').forEach(p=>p.classList.remove('on'));
+  document.querySelector('.pt[data-pt="cash"]').classList.add('on');
+  if(editId){
+    const p=DB.payments.find(x=>x.id===editId); if(!p) return;
+    document.getElementById('pay-edit-id').value=editId;
+    document.getElementById('pay-ttl').textContent="To'lovni tahrirlash";
+    document.getElementById('pf-amt').value=p.amount;
+    document.getElementById('pf-note').value=p.note||'';
+    curPT=p.payType||'cash';
+    const ptEl=document.querySelector(`.pt[data-pt="${curPT}"]`);
+    if(ptEl){ document.querySelectorAll('.pt').forEach(x=>x.classList.remove('on')); ptEl.classList.add('on'); }
+  } else {
+    document.getElementById('pay-edit-id').value='';
+    document.getElementById('pay-ttl').textContent="To'lov kiritish";
+    document.getElementById('pf-amt').value='';
+    document.getElementById('pf-note').value='';
+  }
+  document.getElementById('pf-total').value=M(c.debt);
+  calcRem();
+  const col=custCol(custId);
+  document.getElementById('pay-cinfo').innerHTML=`
+    <div style="display:flex;align-items:center;gap:10px">
+      <div class="cav" style="width:36px;height:36px;font-size:12px;border-radius:10px;background:linear-gradient(135deg,${col},${col}bb)">${ini(c.name)}</div>
+      <div><div style="font-weight:700;font-size:13.5px">${c.name}</div>
+      <div style="font-size:11.5px;color:var(--t3)">Jami qarz: <span style="color:var(--red)">${M(c.debt)}</span></div></div>
+    </div>`;
+  openOv('ov-pay');
+}
+function setFullPay(){
+  const c=gc(curCustId); if(!c||c.debt<=0) return;
+  document.getElementById('pf-amt').value=c.debt; calcRem();
+}
+function calcRem(){
+  const c=gc(curCustId); if(!c) return;
+  const eid=document.getElementById('pay-edit-id').value;
+  let base=c.debt;
+  if(eid){ const p=DB.payments.find(x=>x.id===eid); if(p) base=c.debt+p.amount; }
+  const amt=parseFloat(document.getElementById('pf-amt').value)||0;
+  const rem=base-amt;
+  const el=document.getElementById('pay-rem');
+  el.textContent=MS(rem);
+  el.style.color=rem>0?'var(--red)':rem<0?'var(--green)':'var(--t2)';
+}
+function savePay(){
+  const amt=parseFloat(document.getElementById('pf-amt').value);
+  if(!amt||amt<=0){ toast('Summani kiriting!'); return; }
+  const note=document.getElementById('pf-note').value.trim();
+  const custId=document.getElementById('pay-cust-id').value;
+  const eid=document.getElementById('pay-edit-id').value;
+  const c=gc(custId); if(!c) return;
+  if(eid){
+    const p=DB.payments.find(x=>x.id===eid); if(!p) return;
+    c.debt+=p.amount-amt; p.amount=amt; p.note=note; p.payType=curPT;
+    toast("To'lov yangilandi ✓");
+  } else {
+    DB.payments.push({id:uid(),custId,custName:c.name,amount:amt,note,payType:curPT,date:today(),prevDebt:c.debt});
+    c.debt-=amt;
+    toast("To'lov saqlandi ✓");
+  }
+  saveDB();
+  closeOv('ov-pay');
+  renderSumCards(); renderHome(); renderCustPage(); renderTxList('payments');
+}
+
+// ═══════ TX DETAIL ═══════════════════════════════════════
+function openTxDetail(type,id){
+  const iS=type==='sale';
+  const tx=iS?DB.sales.find(x=>x.id===id):DB.payments.find(x=>x.id===id);
+  if(!tx) return;
+  const col=iS?'var(--yellow)':'var(--green)';
+  const can=isToday(tx.date);
+  let imgs='';
+  if(iS&&tx.imgs&&tx.imgs.length) imgs=`<div style="margin-top:13px"><div style="font-size:10.5px;font-weight:700;color:var(--t2);letter-spacing:.5px;text-transform:uppercase;margin-bottom:8px">RASMLAR</div><div class="imrow">${tx.imgs.map(i=>`<img class="imthumb" src="${i}" onclick="openIV('${i}')">`).join('')}</div></div>`;
+  document.getElementById('txd-ttl').textContent=iS?'Sotuv batafsil':"To'lov batafsil";
+  document.getElementById('txd-body').innerHTML=`
+    <div style="text-align:center;padding:14px 0 18px">
+      <div style="width:60px;height:60px;border-radius:18px;background:${iS?'rgba(245,200,66,.1)':'rgba(38,219,168,.08)'};display:flex;align-items:center;justify-content:center;margin:0 auto 12px">
+        ${iS?'<svg width="26" height="26" fill="none" stroke="var(--yellow)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>'
+            :'<svg width="26" height="26" fill="none" stroke="var(--green)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>'}
+      </div>
+      <div style="font-size:28px;font-weight:900;color:${col};letter-spacing:-.5px">${iS?'+':'-'}${M(tx.amount)}</div>
+      <div style="font-size:11.5px;color:var(--t3);margin-top:5px">${fmtD(tx.date)}${can?' · <span style="color:var(--accent)">Bugun</span>':''}</div>
+    </div>
+    <div style="background:var(--s2);border-radius:13px;padding:13px;border:1px solid var(--border)">
+      <div class="ir"><span class="irl">Mijoz</span><span class="irv">${tx.custName}</span></div>
+      <div class="ir"><span class="irl">Sana</span><span class="irv">${fmtD(tx.date)}</span></div>
+      ${tx.note?`<div class="ir"><span class="irl">Izoh</span><span class="irv">${tx.note}</span></div>`:''}
+      ${!iS&&tx.payType?`<div class="ir"><span class="irl">To'lov turi</span><span class="irv">${tx.payType}</span></div>`:''}
+      <div class="ir"><span class="irl">Avvalgi qarz</span><span class="irv">${M(tx.prevDebt)}</span></div>
+      <div class="ir"><span class="irl">Yangi qarz</span><span class="irv" style="color:${col}">${M(iS?tx.prevDebt+tx.amount:tx.prevDebt-tx.amount)}</span></div>
+    </div>
+    ${imgs}
+    ${can?`
+    <div class="frow mt12">
+      <button class="btn btn-s" style="flex:1" onclick="closeOv('ov-txd');${iS?`openSale('${tx.custId}','${tx.id}')`:`openPay('${tx.custId}','${tx.id}')`}">
+        ${SVGS.edit} Tahrirlash
+      </button>
+      <button class="btn btn-d" style="flex:1" onclick="delTx('${type}','${id}')">
+        ${SVGS.del} O'chirish
+      </button>
+    </div>`:''}
+  `;
+  closeOv('ov-cdetail');
+  openOv('ov-txd');
+}
+function delTx(type,id){
+  if(!confirm("O'chirilsinmi?")) return;
+  const iS=type==='sale';
+  if(iS){ const s=DB.sales.find(x=>x.id===id); if(s){ gc(s.custId).debt-=s.amount; DB.sales=DB.sales.filter(x=>x.id!==id); } }
+  else  { const p=DB.payments.find(x=>x.id===id); if(p){ gc(p.custId).debt+=p.amount; DB.payments=DB.payments.filter(x=>x.id!==id); } }
+  saveDB(); closeOv('ov-txd');
+  renderSumCards(); renderHome(); renderCustPage(); toast("O'chirildi ✓");
+}
+
+// ═══════ TX LIST PAGES ═══════════════════════════════════
+function renderTxList(type){
+  const iS=type==='sales';
+  const filt=iS?salesFilter:paysFilter;
+  let list=iS?[...DB.sales]:[...DB.payments];
+  list.sort((a,b)=>b.date>a.date?1:-1);
+  if(filt==='today') list=list.filter(x=>isToday(x.date));
+  else if(filt==='week') list=list.filter(x=>isWeek(x.date));
+  else if(filt==='month') list=list.filter(x=>isMonth(x.date));
+  const el=document.getElementById(iS?'sales-list':'pay-list'); if(!el) return;
+  const tot=list.reduce((s,x)=>s+x.amount,0);
+  const hdr=`<div style="padding:0 0 8px;display:flex;justify-content:space-between;align-items:center"><span style="font-size:12px;color:var(--t2)">${list.length} ta yozuv</span><span style="font-size:12.5px;font-weight:700;color:${iS?'var(--yellow)':'var(--green)'}">Jami: ${M(tot)}</span></div>`;
+  if(!list.length){ el.innerHTML=hdr+emptyHtml(iS?'🛍️':'💳',"Ma'lumot yo'q"); return; }
+  el.innerHTML=hdr+list.map(x=>`
+    <div class="txcard" onclick="openTxDetail('${iS?'sale':'payment'}','${x.id}')">
+      <div class="txic ${iS?'s':'p'}">${iS
+        ?'<svg width="15" height="15" fill="none" stroke="var(--yellow)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>'
+        :'<svg width="15" height="15" fill="none" stroke="var(--green)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>'
+      }</div>
+      <div class="txinf">
+        <div class="txnm">${x.custName}</div>
+        <div class="txdt">${fmtD(x.date)}${x.note?' · '+x.note:''}${isToday(x.date)?'<span class="today-dot"></span>':''}</div>
+      </div>
+      <div style="text-align:right">
+        <div class="txam ${iS?'s':'p'}">${iS?'+':'-'}${M(x.amount)}</div>
+        ${!iS&&x.payType?`<div style="font-size:10px;color:var(--t3);margin-top:2px">${x.payType}</div>`:''}
+      </div>
+    </div>`).join('');
+}
+
+// ═══════ REPORTS ═════════════════════════════════════════
+function renderReports(){ setRT(activeRT); }
+function setRT(tab){
+  activeRT=tab;
+  document.querySelectorAll('.rtab').forEach(r=>r.classList.remove('on'));
+  const el=document.querySelector(`.rtab[data-rt="${tab}"]`); if(el) el.classList.add('on');
+  const c=document.getElementById('rep-body');
+  if(tab==='overview'){
+    const tS=DB.sales.reduce((s,x)=>s+x.amount,0);
+    const tP=DB.payments.reduce((s,x)=>s+x.amount,0);
+    const tD=DB.customers.reduce((s,c)=>s+(c.debt>0?c.debt:0),0);
+    const tPre=DB.customers.reduce((s,c)=>s+(c.debt<0?Math.abs(c.debt):0),0);
+    c.innerHTML=`
+      <div class="scrl" style="padding-top:8px">
+        <div class="scard r"><div class="sc-lbl">JAMI QARZ</div><div class="sc-val">${M(tD)}</div></div>
+        <div class="scard y"><div class="sc-lbl">JAMI SOTUV</div><div class="sc-val">${M(tS)}</div></div>
+        <div class="scard g"><div class="sc-lbl">JAMI TO'LOV</div><div class="sc-val">${M(tP)}</div></div>
+        <div class="scard v"><div class="sc-lbl">OLDINDAN</div><div class="sc-val">${M(tPre)}</div></div>
+      </div>
+      <div class="cbox">
+        <div class="cttl">📊 Moliyaviy ko'rsatkichlar</div>
+        ${mkBars([{l:'Sotuv',v:tS,c:'var(--yellow)'},{l:"To'lov",v:tP,c:'var(--green)'},{l:'Qarz',v:tD,c:'var(--red)'},{l:'Oldindan',v:tPre,c:'var(--accent)'}])}
+      </div>
+      <div class="cbox">
+        <div class="cttl">🍰 Mijozlar taqsimoti</div>
+        ${mkPie([{l:'Qarzdor',v:DB.customers.filter(c=>c.debt>0).length,c:'var(--red)'},{l:'Oldindan',v:DB.customers.filter(c=>c.debt<0).length,c:'var(--green)'},{l:'Hisob-kitob',v:DB.customers.filter(c=>c.debt===0).length,c:'var(--t3)'}])}
+      </div>`;
+  } else if(tab==='debtors'){
+    const locs=[...new Set(DB.customers.map(c=>c.location).filter(Boolean))];
+    c.innerHTML=`
+      <div style="padding:0 16px 12px">
+        <select class="fi" id="dloc" onchange="renderDList()" style="padding:10px 13px">
+          <option value="">Barcha manzillar</option>
+          ${locs.map(l=>`<option value="${l}">${l}</option>`).join('')}
+        </select>
+      </div>
+      <div id="dlist"></div>`;
+    renderDList();
+  } else if(tab==='prepaid'){
+    const list=DB.customers.filter(c=>c.debt<0).sort((a,b)=>a.debt-b.debt);
+    const tot=list.reduce((s,c)=>s+Math.abs(c.debt),0);
+    c.innerHTML=`
+      <div style="padding:0 16px 8px;display:flex;justify-content:space-between">
+        <span style="font-size:12px;color:var(--t2)">${list.length} ta</span>
+        <span style="font-size:12.5px;font-weight:700;color:var(--green)">Jami: ${M(tot)}</span>
+      </div>
+      <div class="clist">${list.length?list.map(cu=>buildCard(cu,false)).join(''):emptyHtml('💚',"Oldindan to'lagan yo'q")}</div>`;
+  } else if(tab==='chart'){
+    const months={};
+    DB.sales.forEach(s=>{const m=(s.date||'').slice(0,7);if(!months[m])months[m]={s:0,p:0};months[m].s+=s.amount;});
+    DB.payments.forEach(p=>{const m=(p.date||'').slice(0,7);if(!months[m])months[m]={s:0,p:0};months[m].p+=p.amount;});
+    const keys=Object.keys(months).filter(Boolean).sort().slice(-6);
+    const mx=Math.max(...keys.map(k=>Math.max(months[k].s,months[k].p)),1);
+    c.innerHTML=`
+      <div class="cbox" style="margin-top:14px">
+        <div class="cttl">📈 Oylik sotuv va to'lovlar</div>
+        <div style="overflow-x:auto">
+          <div class="bars" style="min-width:${keys.length*60}px;height:100px;gap:10px">
+            ${keys.map(m=>`
+              <div class="barw" style="min-width:44px">
+                <div style="display:flex;align-items:flex-end;gap:4px;height:96px;width:100%">
+                  <div class="bar" style="background:var(--yellow);flex:1;height:${Math.round(months[m].s/mx*96)}px"></div>
+                  <div class="bar" style="background:var(--green);flex:1;height:${Math.round(months[m].p/mx*96)}px"></div>
+                </div>
+                <div class="barl">${m.slice(5)}</div>
+              </div>`).join('')}
+          </div>
+        </div>
+        <div style="display:flex;gap:14px;margin-top:11px">
+          <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--t2)"><div style="width:10px;height:10px;border-radius:3px;background:var(--yellow)"></div>Sotuv</div>
+          <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--t2)"><div style="width:10px;height:10px;border-radius:3px;background:var(--green)"></div>To'lov</div>
+        </div>
+      </div>`;
+  }
+}
+function renderDList(){
+  const loc=(document.getElementById('dloc')||{}).value||'';
+  let list=DB.customers.filter(c=>c.debt>0);
+  if(loc) list=list.filter(c=>c.location===loc);
+  list.sort((a,b)=>b.debt-a.debt);
+  const tot=list.reduce((s,c)=>s+c.debt,0);
+  document.getElementById('dlist').innerHTML=`
+    <div style="padding:0 16px 8px;display:flex;justify-content:space-between">
+      <span style="font-size:12px;color:var(--t2)">${list.length} ta</span>
+      <span style="font-size:12.5px;font-weight:700;color:var(--red)">Jami: ${M(tot)}</span>
+    </div>
+    <div class="clist" style="padding-bottom:8px">${list.length?list.map(c=>buildCard(c,false)).join(''):emptyHtml('✅','Qarzdor yo\'q')}</div>`;
+}
+function mkBars(items){
+  const mx=Math.max(...items.map(i=>i.v),1);
+  return `<div class="bars">${items.map(i=>`<div class="barw"><div class="bar" style="background:${i.c};height:${Math.round(i.v/mx*100)}%"></div><div class="barl">${i.l}</div></div>`).join('')}</div>`;
+}
+function mkPie(items){
+  const tot=items.reduce((s,i)=>s+i.v,0)||1;
+  let off=0;
+  const segs=items.map(i=>{
+    const a=i.v/tot*360, sa=off*Math.PI/180, ea=(off+a)*Math.PI/180;
+    const x1=50+46*Math.sin(sa),y1=50-46*Math.cos(sa);
+    const x2=50+46*Math.sin(ea),y2=50-46*Math.cos(ea);
+    const d=`M50,50 L${x1},${y1} A46,46,0,${a>180?1:0},1,${x2},${y2} Z`;
+    off+=a;
+    return `<path d="${d}" fill="${i.c}" opacity=".85"/>`;
+  }).join('');
+  return `<div class="pierow"><svg width="100" height="100" viewBox="0 0 100 100">${segs}</svg><div class="pielegs">${items.map(i=>`<div class="pieleg"><div class="piedot" style="background:${i.c}"></div>${i.l}: <strong>${i.v}</strong></div>`).join('')}</div></div>`;
+}
+
+// ═══════ SETTINGS ════════════════════════════════════════
+function setLang(l){
+  lang=l; localStorage.setItem('nd_lang',l);
+  ['uz','ru','en'].forEach(x=>document.getElementById('lc-'+x).style.display=x===l?'':'none');
+  toast('Til o\'zgartirildi ✓');
+}
+let darkMode=true;
+function toggleTheme(){
+  darkMode=!darkMode;
+  document.documentElement.setAttribute('data-theme',darkMode?'':'light');
+  document.getElementById('theme-tog').classList.toggle('on',darkMode);
+  localStorage.setItem('nd_theme',darkMode?'dark':'light');
+}
+function exportCSV(){
+  const rows=[['Ism','Telefon','Manzil','Joylashuv','Boshlangich qarz','Joriy qarz']];
+  DB.customers.forEach(c=>rows.push([c.name,c.phone,c.address,c.location,c.initialDebt,c.debt]));
+  const csv=rows.map(r=>r.join(',')).join('\n');
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8'}));
+  a.download='mijozlar.csv'; a.click();
+  toast('CSV yuklab olindi ✓');
+}
+function resetData(){
+  if(!confirm("Barcha ma'lumotlar o'chiriladimi?")) return;
+  localStorage.removeItem('nd2'); initTest();
+  renderSumCards(); renderHome(); toast("Ma'lumotlar yangilandi ✓");
+}
+
+// ═══════ OVERLAY / MODAL ═════════════════════════════════
+function openOv(id){ document.getElementById(id).classList.add('open'); }
+function closeOv(id){ document.getElementById(id).classList.remove('open'); }
+document.querySelectorAll('.ov').forEach(ov=>{
+  ov.addEventListener('click',e=>{ if(e.target===ov) closeOv(ov.id); });
+});
+
+// ═══════ IMAGE VIEWER ════════════════════════════════════
+function openIV(src){ document.getElementById('iv-img').src=src; document.getElementById('iv').classList.add('open'); }
+function closeIV(){ document.getElementById('iv').classList.remove('open'); }
+
+// ═══════ TOAST ═══════════════════════════════════════════
+function toast(msg){
+  const el=document.getElementById('toast');
+  el.innerHTML=msg; el.classList.add('show');
+  clearTimeout(el._t); el._t=setTimeout(()=>el.classList.remove('show'),2600);
+}
+
+// ═══════ EMPTY STATE ═════════════════════════════════════
+function emptyHtml(ico,txt){
+  return `<div class="empty"><div style="font-size:40px;margin-bottom:10px;opacity:.3">${ico}</div><p>${txt}</p></div>`;
+}
+
+// ═══════ EVENT DELEGATION ════════════════════════════════
+document.getElementById('home-chips').addEventListener('click',e=>{
+  const chip=e.target.closest('.chip'); if(!chip) return;
+  document.querySelectorAll('#home-chips .chip').forEach(c=>c.classList.remove('on'));
+  chip.classList.add('on'); homeFilter=chip.dataset.filter; renderHome();
+});
+document.getElementById('sales-chips').addEventListener('click',e=>{
+  const chip=e.target.closest('.chip'); if(!chip||!chip.dataset.sf) return;
+  document.querySelectorAll('#sales-chips .chip').forEach(c=>c.classList.remove('on'));
+  chip.classList.add('on'); salesFilter=chip.dataset.sf; renderTxList('sales');
+});
+document.getElementById('pay-chips').addEventListener('click',e=>{
+  const chip=e.target.closest('.chip'); if(!chip||!chip.dataset.pf) return;
+  document.querySelectorAll('#pay-chips .chip').forEach(c=>c.classList.remove('on'));
+  chip.classList.add('on'); paysFilter=chip.dataset.pf; renderTxList('payments');
+});
+document.querySelectorAll('.rtabs').forEach(tabs=>{
+  tabs.addEventListener('click',e=>{ const t=e.target.closest('.rtab'); if(!t) return; setRT(t.dataset.rt); });
+});
+document.querySelectorAll('#bnav .ni, #sb .sbi').forEach(btn=>{
+  btn.addEventListener('click',()=>{ const p=btn.dataset.page; if(p) nav(p); });
+});
+document.querySelectorAll('.ptypes').forEach(wrap=>{
+  wrap.addEventListener('click',e=>{
+    const pt=e.target.closest('.pt'); if(!pt) return;
+    wrap.querySelectorAll('.pt').forEach(x=>x.classList.remove('on'));
+    pt.classList.add('on'); curPT=pt.dataset.pt;
+  });
+});
+
+// ═══════ BOOT ════════════════════════════════════════════
+window.addEventListener('load',()=>{
+  loadDB();
+  lang=localStorage.getItem('nd_lang')||'uz';
+  darkMode=(localStorage.getItem('nd_theme')||'dark')==='dark';
+  document.documentElement.setAttribute('data-theme',darkMode?'':'light');
+  document.getElementById('theme-tog').classList.toggle('on',darkMode);
+  ['uz','ru','en'].forEach(x=>document.getElementById('lc-'+x).style.display=x===lang?'':'none');
+  renderSumCards();
+  renderHome();
+});
+function callC(p){ if(p) window.location.href='tel:'+p; }
+</script>
+</body>
+</html>
