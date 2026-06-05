@@ -3048,7 +3048,7 @@
     }
 
     let thTimer;
-    function startTH(id) { thTimer = setTimeout(() => confCloseInv(id), 700); }
+    function startTH(id) { thTimer = setTimeout(() => confCloseInv(id), 300); }
     function endTH() { clearTimeout(thTimer); }
 
     function confCloseInv(id) {
@@ -3489,7 +3489,7 @@
 
     // ===================== PAY HOLD =====================
     let phTimer;
-    function startPH() { phTimer = setTimeout(() => { document.getElementById('pq').classList.add('show'); }, 900); }
+    function startPH() { phTimer = setTimeout(() => { document.getElementById('pq').classList.add('show'); }, 300); }
     function endPH() { clearTimeout(phTimer); }
     document.addEventListener('click', e => { if (!e.target.closest('.pay-wrap')) document.getElementById('pq').classList.remove('show'); });
 
