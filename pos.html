@@ -420,13 +420,20 @@
       border: 1px solid transparent;
       transition: all var(--tr);
       white-space: nowrap;
-      cursor: pointer
+      cursor: pointer;
+      -webkit-user-select: none;
+      /* Safari uchun */
+      user-select: none;
+      touch-action: none;
     }
 
     .inv-tab.active {
       background: var(--accentg);
       color: #fff;
-      box-shadow: 0 2px 12px rgba(79, 142, 247, .4)
+      box-shadow: 0 2px 12px rgba(79, 142, 247, .4);
+      transform: scale(0.95);
+      /* Bosganda biroz kichrayadi */
+      opacity: 0.8;
     }
 
     .inv-tab-num {
@@ -947,7 +954,11 @@
       display: none;
       align-items: center;
       gap: 7px;
-      box-shadow: 0 4px 20px rgba(16, 217, 138, .4)
+      box-shadow: 0 4px 20px rgba(16, 217, 138, .4);
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: transparent;
+      -webkit-user-select: none;
+      user-select: none;
     }
 
     .pay-btn.show {
@@ -1919,13 +1930,13 @@
       }
 
       .header {
-        height: 125px;
+        height: 127px;
         align-items: flex-end;
         padding: 0 12px 10px 12px;
       }
 
       .sidebar {
-        padding-top: 150px;
+        padding-top: 80px;
       }
     }
   </style>
@@ -2947,28 +2958,28 @@
 
   <script>
 
-     const tg = window.Telegram.WebApp;
- 
-     // Ilovani tayyorlash
-     tg.ready();
-     tg.expand(); // Maksimal yoyish
- 
-     // Fullscreen (Agar Telegram versiyasi qo'llab-quvvatlasa)
-     if (tg.requestFullscreen) {
-       tg.requestFullscreen();
-     }
- 
-     // Ranglarni sozlash (Footer va Header birlashishi uchun)
-     tg.setHeaderColor('#1e40af'); // Teparoq ko'k
-     tg.setBackgroundColor('#f3f4f6'); // Pastki va fon rangi
- 
-     // Agar Telegram yangi versiya bo'lsa, pastki bar rangini o'zgartirish
-     if (tg.setBottomBarColor) {
-       tg.setBottomBarColor('#f3f4f6');
-     }
- 
-     // Yopishdan oldin tasdiqlash
-     tg.enableClosingConfirmation();
+    const tg = window.Telegram.WebApp;
+
+    // Ilovani tayyorlash
+    tg.ready();
+    tg.expand(); // Maksimal yoyish
+
+    // Fullscreen (Agar Telegram versiyasi qo'llab-quvvatlasa)
+    if (tg.requestFullscreen) {
+      tg.requestFullscreen();
+    }
+
+    // Ranglarni sozlash (Footer va Header birlashishi uchun)
+    tg.setHeaderColor('#1e40af'); // Teparoq ko'k
+    tg.setBackgroundColor('#f3f4f6'); // Pastki va fon rangi
+
+    // Agar Telegram yangi versiya bo'lsa, pastki bar rangini o'zgartirish
+    if (tg.setBottomBarColor) {
+      tg.setBottomBarColor('#f3f4f6');
+    }
+
+    // Yopishdan oldin tasdiqlash
+    tg.enableClosingConfirmation();
     // ===================== STATE =====================
     const USERS = [{ username: 'admin', password: '1234', name: 'Abdulloh Karimov', role: 'Kassir' }];
     let S = {
@@ -3048,7 +3059,7 @@
     }
 
     let thTimer;
-    function startTH(id) { thTimer = setTimeout(() => confCloseInv(id), 300); }
+    function startTH(id) { thTimer = setTimeout(() => confCloseInv(id), 500); }
     function endTH() { clearTimeout(thTimer); }
 
     function confCloseInv(id) {
@@ -3139,15 +3150,18 @@
     let html5QrCode;
 
     function toggleScanner() {
-      // Qurilmani aniqlash (faqat mobil yoki planshet bo'lsa)
-      const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+      // 1-tekshiruv: Tugma umuman ishlayaptimi?
+      // Agar bu chiqsa, tugma bosilayapti.
+      toast("Skaner bosildi", 's');
 
-      if (!isMobile) {
-        toast("Kamera faqat mobil qurilmalarda ishlaydi", 'e');
+      const reader = document.getElementById('reader');
+
+      // 2-tekshiruv: Reader elementi bormi?
+      if (!reader) {
+        toast("Xato: 'reader' elementi topilmadi!", 'e');
         return;
       }
 
-      const reader = document.getElementById('reader');
       if (reader.style.display === 'block') {
         stopScanner();
       } else {
@@ -3159,30 +3173,26 @@
       const reader = document.getElementById('reader');
       reader.style.display = 'block';
 
+      toast("Kamera yuklanyapti...", 'i');
+
+      // 3-tekshiruv: Kutubxona yuklanganmi?
+      if (typeof Html5Qrcode === 'undefined') {
+        toast("Xato: Html5Qrcode kutubxonasi topilmadi!", 'e');
+        return;
+      }
+
       html5QrCode = new Html5Qrcode("reader");
 
-      // Kamerani ruxsat olish uchun so'rov
-      Html5Qrcode.getCameras().then(devices => {
-        if (devices && devices.length) {
-          // Orqa kamerani (environment) topishga urinish
-          let cameraId = devices[0].id;
-          const envCam = devices.find(d => d.label.toLowerCase().includes('back') || d.label.toLowerCase().includes('environment'));
-          if (envCam) cameraId = envCam.id;
-
-          html5QrCode.start(
-            cameraId,
-            { fps: 10, qrbox: { width: 250, height: 150 } },
-            (decodedText) => {
-              document.getElementById('si').value = decodedText;
-              // ... logikangiz
-              stopScanner();
-            }
-          ).catch(err => {
-            toast("Kamera ochilmadi (ruxsatni tekshiring)", 'e');
-          });
+      html5QrCode.start(
+        { facingMode: "environment" },
+        { fps: 10, qrbox: { width: 250, height: 150 } },
+        (decodedText) => {
+          document.getElementById('si').value = decodedText;
+          stopScanner();
         }
-      }).catch(err => {
-        toast("Kamera aniqlanmadi", 'e');
+      ).catch(err => {
+        // 4-tekshiruv: Aniq xatolik matnini ko'rsatish
+        toast("Kamera xatosi: " + err.toString(), 'e');
       });
     }
 
@@ -3489,7 +3499,7 @@
 
     // ===================== PAY HOLD =====================
     let phTimer;
-    function startPH() { phTimer = setTimeout(() => { document.getElementById('pq').classList.add('show'); }, 300); }
+    function startPH() { phTimer = setTimeout(() => { document.getElementById('pq').classList.add('show'); }, 500); }
     function endPH() { clearTimeout(phTimer); }
     document.addEventListener('click', e => { if (!e.target.closest('.pay-wrap')) document.getElementById('pq').classList.remove('show'); });
 
