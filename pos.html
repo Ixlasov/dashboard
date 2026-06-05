@@ -1907,22 +1907,28 @@
 
     /* Kamera oynasi inputdan tashqarida bo'lishi kerak */
     #reader {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      z-index: 9999;
-      /* Barcha elementlardan ustun */
-      background: black;
-      display: none;
-      /* Dastlab yashirin */
+      position: fixed !important;
+      top: 0 !important;
+      left: 0 !important;
+      width: 100vw !important;
+      height: 100vh !important;
+      z-index: 9999 !important;
+      background: #000 !important;
+      overflow: hidden !important;
     }
 
+    /* Kamera tasvirini to‘liq ekranga yoyish */
     #reader video {
       width: 100% !important;
       height: 100% !important;
       object-fit: cover !important;
+    }
+
+    /* Skanerlash ramkasini o‘rtaga olish */
+    #reader div:nth-child(2) {
+      display: flex !important;
+      justify-content: center !important;
+      align-items: center !important;
     }
 
     .sr-item.focused {
@@ -2178,11 +2184,9 @@
                 </svg>
               </span>
 
-              <div id="reader" style="width: 100%; display: none; margin-top: 10px;">
-                <div id="reader">
-                  <button onclick="stopScanner()"
-                    style="position:absolute; top:20px; right:20px; z-index:10000;">Yopish</button>
-                </div>
+              <div id="reader">
+                <button onclick="stopScanner()"
+                  style="position:fixed; top:20px; right:20px; z-index:10000; padding:10px 20px; background:red; color:white; border:none; border-radius:5px;">Yopish</button>
               </div>
               <button class="search-clear" id="sc" onclick="clearSI()">
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
@@ -3188,30 +3192,33 @@
       const reader = document.getElementById('reader');
       reader.style.display = 'block';
 
-      toast("Kamera yuklanyapti...", 'i');
-
-      // 3-tekshiruv: Kutubxona yuklanganmi?
-      if (typeof Html5Qrcode === 'undefined') {
-        toast("Xato: Html5Qrcode kutubxonasi topilmadi!", 'e');
-        return;
-      }
-
       html5QrCode = new Html5Qrcode("reader");
+
+      const config = {
+        fps: 20, // Tezlikni oshirdik
+        qrbox: { width: 280, height: 150 }, // Ramka o'lchami
+        aspectRatio: 1.0,
+        formatsToSupport: [
+          Html5QrcodeSupportedFormats.QR_CODE,
+          Html5QrcodeSupportedFormats.EAN_13,
+          Html5QrcodeSupportedFormats.EAN_8,
+          Html5QrcodeSupportedFormats.CODE_128
+        ]
+      };
 
       html5QrCode.start(
         { facingMode: "environment" },
-        {
-          fps: 10,
-          qrbox: { width: 300, height: 200 }, // Skanerlash oynasi
-          aspectRatio: 1.0
-        },
+        config,
         (decodedText) => {
-          // Barkod topilganda yozish
+          // Skanerlash muvaffaqiyatli
           document.getElementById('si').value = decodedText;
           stopScanner();
+        },
+        (errorMessage) => {
+          // Bu yerda xatoliklar (masalan "Not found") ko'p chiqadi, shuning uchun toast yozmaymiz
         }
       ).catch(err => {
-        toast("Kamera xatosi: " + err, 'e');
+        toast("Kamera ochilmadi: " + err, 'e');
       });
     }
 
