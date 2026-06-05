@@ -156,12 +156,12 @@
 
     /* ===== HEADER ===== */
     .header {
-      height: var(--hh);
+      height: 100px;
       background: var(--bg2);
       border-bottom: 1px solid var(--border);
       display: flex;
-      align-items: center;
-      padding: 0 12px;
+      align-items: flex-end;
+      padding: 0 12px 10px 12px;
       gap: 8px;
       flex-shrink: 0;
       position: relative;
@@ -2923,28 +2923,28 @@
 
   <script>
 
-    const tg = window.Telegram.WebApp;
-
-    // Ilovani tayyorlash
-    tg.ready();
-    tg.expand(); // Maksimal yoyish
-
-    // Fullscreen (Agar Telegram versiyasi qo'llab-quvvatlasa)
-    if (tg.requestFullscreen) {
-      tg.requestFullscreen();
-    }
-
-    // Ranglarni sozlash (Footer va Header birlashishi uchun)
-    tg.setHeaderColor('#1e40af'); // Teparoq ko'k
-    tg.setBackgroundColor('#f3f4f6'); // Pastki va fon rangi
-
-    // Agar Telegram yangi versiya bo'lsa, pastki bar rangini o'zgartirish
-    if (tg.setBottomBarColor) {
-      tg.setBottomBarColor('#f3f4f6');
-    }
-
-    // Yopishdan oldin tasdiqlash
-    tg.enableClosingConfirmation();
+     const tg = window.Telegram.WebApp;
+ 
+     // Ilovani tayyorlash
+     tg.ready();
+     tg.expand(); // Maksimal yoyish
+ 
+     // Fullscreen (Agar Telegram versiyasi qo'llab-quvvatlasa)
+     if (tg.requestFullscreen) {
+       tg.requestFullscreen();
+     }
+ 
+     // Ranglarni sozlash (Footer va Header birlashishi uchun)
+     tg.setHeaderColor('#1e40af'); // Teparoq ko'k
+     tg.setBackgroundColor('#f3f4f6'); // Pastki va fon rangi
+ 
+     // Agar Telegram yangi versiya bo'lsa, pastki bar rangini o'zgartirish
+     if (tg.setBottomBarColor) {
+       tg.setBottomBarColor('#f3f4f6');
+     }
+ 
+     // Yopishdan oldin tasdiqlash
+     tg.enableClosingConfirmation();
     // ===================== STATE =====================
     const USERS = [{ username: 'admin', password: '1234', name: 'Abdulloh Karimov', role: 'Kassir' }];
     let S = {
