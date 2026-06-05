@@ -72,12 +72,14 @@
       box-sizing: border-box;
       margin: 0;
       padding: 0;
-      -webkit-tap-highlight-color: transparent
+      -webkit-tap-highlight-color: transparent;
+      overscroll-behavior: none;
     }
 
     html {
       height: 100%;
-      overflow: hidden
+      overflow: hidden;
+      width: 100%;
     }
 
     body {
@@ -87,7 +89,8 @@
       background: var(--bg);
       color: var(--text);
       font-size: 14px;
-      line-height: 1.4
+      line-height: 1.4;
+      overscroll-behavior: none;
     }
 
     iframe {
@@ -156,17 +159,19 @@
 
     /* ===== HEADER ===== */
     .header {
-      height: 120px;
+      height: var(--hh);
       background: var(--bg2);
       border-bottom: 1px solid var(--border);
       display: flex;
-      align-items: flex-end;
-      padding: 0 12px 10px 12px;
+      align-items: center;
+      padding: 0 12px;
       gap: 8px;
       flex-shrink: 0;
       position: relative;
       z-index: 10;
+
     }
+
 
     .hdr-logo {
       flex: 1;
@@ -811,7 +816,7 @@
       gap: 10px;
       flex-shrink: 0;
       position: relative;
-      z-index: 5
+      z-index: 5;
     }
 
     .ft-totals {
@@ -978,6 +983,7 @@
       overflow-y: auto;
       border: 1px solid var(--border);
       border-bottom: none;
+      padding-bottom: 25px;
       box-shadow: var(--shadow)
     }
 
@@ -1903,6 +1909,24 @@
       /* Fokus bo'lganda rang o'zgarishi */
       border-left: 4px solid var(--green);
       /* Chap tomonida yashil chiziq */
+    }
+
+    @media screen and (max-width: 768px) {
+      .pos-footer {
+        height: 90px;
+        padding: 12px 12px 0 12px;
+        align-items: flex-start;
+      }
+
+      .header {
+        height: 125px;
+        align-items: flex-end;
+        padding: 0 12px 10px 12px;
+      }
+
+      .sidebar {
+        padding-top: 150px;
+      }
     }
   </style>
 </head>
@@ -2923,7 +2947,7 @@
 
   <script>
 
-     const tg = window.Telegram.WebApp;
+    /*  const tg = window.Telegram.WebApp;
  
      // Ilovani tayyorlash
      tg.ready();
@@ -2944,7 +2968,7 @@
      }
  
      // Yopishdan oldin tasdiqlash
-     tg.enableClosingConfirmation();
+     tg.enableClosingConfirmation(); */
     // ===================== STATE =====================
     const USERS = [{ username: 'admin', password: '1234', name: 'Abdulloh Karimov', role: 'Kassir' }];
     let S = {
@@ -3136,28 +3160,29 @@
       reader.style.display = 'block';
 
       html5QrCode = new Html5Qrcode("reader");
-      html5QrCode.start(
-        { facingMode: "environment" }, // Orqa kamera
-        { fps: 10, qrbox: { width: 250, height: 150 } },
-        (decodedText) => {
-          // 1. Barkod topilganda inputga yozamiz
-          document.getElementById('si').value = decodedText;
 
-          // 2. Mahsulotni izlaymiz va savatga qo'shamiz
-          const found = S.prods.find(p => p.bc === decodedText || p.sku === decodedText);
-          if (found) {
-            addToCart(found.id);
-            document.getElementById('si').value = '';
-            onSI('');
-          } else {
-            toast("Mahsulot topilmadi: " + decodedText, 'e');
-          }
+      // Kamerani ruxsat olish uchun so'rov
+      Html5Qrcode.getCameras().then(devices => {
+        if (devices && devices.length) {
+          // Orqa kamerani (environment) topishga urinish
+          let cameraId = devices[0].id;
+          const envCam = devices.find(d => d.label.toLowerCase().includes('back') || d.label.toLowerCase().includes('environment'));
+          if (envCam) cameraId = envCam.id;
 
-          // 3. Skanerni to'xtatamiz
-          stopScanner();
+          html5QrCode.start(
+            cameraId,
+            { fps: 10, qrbox: { width: 250, height: 150 } },
+            (decodedText) => {
+              document.getElementById('si').value = decodedText;
+              // ... logikangiz
+              stopScanner();
+            }
+          ).catch(err => {
+            toast("Kamera ochilmadi (ruxsatni tekshiring)", 'e');
+          });
         }
-      ).catch(err => {
-        toast("Kamera ochilmadi: " + err, 'e');
+      }).catch(err => {
+        toast("Kamera aniqlanmadi", 'e');
       });
     }
 
