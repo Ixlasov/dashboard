@@ -1,0 +1,4025 @@
+<!DOCTYPE html>
+<html lang="uz" data-theme="dark">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>SavdoPro</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap"
+    rel="stylesheet">
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <style>
+    :root {
+      --bg: #0b0f1a;
+      --bg2: #111827;
+      --bg3: #1a2235;
+      --bg4: #212d45;
+      --bg5: #263248;
+      --border: #263248;
+      --border2: #334870;
+      --text: #eef2ff;
+      --text2: #94a3c4;
+      --text3: #4e6080;
+      --accent: #4f8ef7;
+      --accent2: #7eb3ff;
+      --accentg: linear-gradient(135deg, #4f8ef7, #8b5cf6);
+      --green: #10d98a;
+      --greeng: linear-gradient(135deg, #10d98a, #059669);
+      --red: #f25757;
+      --redg: linear-gradient(135deg, #f25757, #dc2626);
+      --yellow: #fbbf24;
+      --purple: #8b5cf6;
+      --purpleg: linear-gradient(135deg, #8b5cf6, #6d28d9);
+      --cyan: #22d3ee;
+      --orange: #fb923c;
+      --glass: rgba(255, 255, 255, 0.03);
+      --glass2: rgba(255, 255, 255, 0.06);
+      --shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+      --shadow2: 0 4px 16px rgba(0, 0, 0, 0.35);
+      --shadowg: 0 4px 20px rgba(79, 142, 247, 0.35);
+      --r: 14px;
+      --r2: 10px;
+      --r3: 7px;
+      --font: 'Sora', sans-serif;
+      --mono: 'JetBrains Mono', monospace;
+      --hh: 54px;
+      --th: 46px;
+      --fh: 70px;
+      --tr: 0.18s ease;
+    }
+
+    [data-theme="light"] {
+      --bg: #f1f5fd;
+      --bg2: #ffffff;
+      --bg3: #e8eef8;
+      --bg4: #dce6f5;
+      --bg5: #cfdaf0;
+      --border: #d0daf0;
+      --border2: #b0c4e8;
+      --text: #0f172a;
+      --text2: #3d5275;
+      --text3: #8a9fc0;
+      --glass: rgba(255, 255, 255, 0.5);
+      --glass2: rgba(255, 255, 255, 0.8);
+      --shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+      --shadow2: 0 4px 16px rgba(0, 0, 0, 0.08);
+    }
+
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent
+    }
+
+    html {
+      height: 100%;
+      overflow: hidden
+    }
+
+    body {
+      height: 100%;
+      overflow: hidden;
+      font-family: var(--font);
+      background: var(--bg);
+      color: var(--text);
+      font-size: 14px;
+      line-height: 1.4
+    }
+
+    iframe {
+      border: none;
+      width: 100%;
+      height: 100vh;
+      display: block;
+      /* iOS pastki qismidagi chiziq uchun joy */
+      padding-bottom: env(safe-area-inset-bottom);
+      box-sizing: border-box;
+    }
+
+    button {
+      font-family: var(--font);
+      cursor: pointer;
+      border: none;
+      outline: none;
+      transition: opacity var(--tr), transform var(--tr)
+    }
+
+    button:active {
+      opacity: .75;
+      transform: scale(.97)
+    }
+
+    input,
+    select,
+    textarea {
+      font-family: var(--font);
+      outline: none;
+      border: none
+    }
+
+    ::-webkit-scrollbar {
+      width: 0;
+      height: 0
+    }
+
+    /* ICONS via inline SVG sprites — referenced as <use> */
+    .ico {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0
+    }
+
+    .ico svg {
+      display: block
+    }
+
+    /* ===== LAYOUT ===== */
+    #app {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      overflow: hidden
+    }
+
+    .views {
+      flex: 1;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      min-height: 0
+    }
+
+    /* ===== HEADER ===== */
+    .header {
+      height: var(--hh);
+      background: var(--bg2);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      padding: 0 12px;
+      gap: 8px;
+      flex-shrink: 0;
+      position: relative;
+      z-index: 10;
+    }
+
+    .hdr-logo {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      gap: 8px
+    }
+
+    .hdr-logo-mark {
+      width: 32px;
+      height: 32px;
+      border-radius: 9px;
+      background: var(--accentg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 0 16px rgba(79, 142, 247, .4)
+    }
+
+    .hdr-title {
+      font-size: 15px;
+      font-weight: 800;
+      letter-spacing: -.4px;
+      background: linear-gradient(90deg, var(--accent2), var(--purple));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent
+    }
+
+    .hbtn {
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--bg3);
+      border-radius: var(--r3);
+      color: var(--text2);
+      position: relative;
+      flex-shrink: 0;
+      border: 1px solid var(--border)
+    }
+
+    .hbtn:hover {
+      background: var(--bg4)
+    }
+
+    .hbtn.accent {
+      background: var(--accentg);
+      color: #fff;
+      border: none;
+      box-shadow: var(--shadowg)
+    }
+
+    /* ===== SIDEBAR ===== */
+    .sb-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, .7);
+      z-index: 100;
+      display: none;
+      backdrop-filter: blur(4px)
+    }
+
+    .sb-overlay.open {
+      display: block
+    }
+
+    .sidebar {
+      position: fixed;
+      left: -290px;
+      top: 0;
+      bottom: 0;
+      width: 290px;
+      background: var(--bg2);
+      border-right: 1px solid var(--border);
+      z-index: 101;
+      transition: left .27s cubic-bezier(.4, 0, .2, 1);
+      display: flex;
+      flex-direction: column
+    }
+
+    .sidebar.open {
+      left: 0
+    }
+
+    .sb-head {
+      padding: 18px 16px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: linear-gradient(135deg, rgba(79, 142, 247, .08), rgba(139, 92, 246, .08))
+    }
+
+    .sb-avatar {
+      width: 46px;
+      height: 46px;
+      border-radius: 50%;
+      background: var(--accentg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      font-weight: 800;
+      color: #fff;
+      box-shadow: 0 0 18px rgba(79, 142, 247, .5)
+    }
+
+    .sb-name {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text)
+    }
+
+    .sb-role {
+      font-size: 11px;
+      color: var(--text3);
+      margin-top: 2px
+    }
+
+    .sb-smena {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      margin-top: 4px;
+      background: rgba(16, 217, 138, .12);
+      border-radius: 10px;
+      padding: 2px 7px;
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--green)
+    }
+
+    .sb-nav {
+      flex: 1;
+      overflow-y: auto;
+      padding: 8px
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 11px 14px;
+      border-radius: var(--r2);
+      color: var(--text2);
+      font-size: 13px;
+      font-weight: 500;
+      transition: all var(--tr);
+      margin-bottom: 2px;
+      cursor: pointer
+    }
+
+    .nav-item:hover,
+    .nav-item.active {
+      background: var(--bg3);
+      color: var(--accent2)
+    }
+
+    .nav-item.active {
+      border-left: 3px solid var(--accent)
+    }
+
+    .nav-item .ni {
+      width: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0
+    }
+
+    .sb-foot {
+      padding: 10px;
+      border-top: 1px solid var(--border)
+    }
+
+    .nav-danger {
+      color: var(--red) !important
+    }
+
+    /* ===== POS VIEW ===== */
+    .pos-view {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      overflow: hidden;
+      min-height: 0
+    }
+
+    /* ===== INVOICE TABS ===== */
+    .inv-tabs-wrap {
+      height: var(--th);
+      background: var(--bg2);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      flex-shrink: 0;
+      overflow: hidden
+    }
+
+    .inv-add-btn {
+      width: 46px;
+      height: var(--th);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-right: 1px solid var(--border);
+      flex-shrink: 0
+    }
+
+    .inv-add-btn button {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background: var(--accentg);
+      color: #fff;
+      font-size: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: var(--shadowg)
+    }
+
+    .inv-tabs-scroll {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      overflow-x: auto;
+      gap: 5px;
+      padding: 0 8px;
+      height: 100%
+    }
+
+    .inv-tab {
+      flex-shrink: 0;
+      height: 32px;
+      padding: 0 12px;
+      border-radius: var(--r3);
+      background: var(--bg3);
+      color: var(--text2);
+      font-size: 11px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      border: 1px solid transparent;
+      transition: all var(--tr);
+      white-space: nowrap;
+      cursor: pointer
+    }
+
+    .inv-tab.active {
+      background: var(--accentg);
+      color: #fff;
+      box-shadow: 0 2px 12px rgba(79, 142, 247, .4)
+    }
+
+    .inv-tab-num {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, .18);
+      font-size: 9px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700
+    }
+
+    /* ===== SEARCH ===== */
+    .search-wrap {
+      padding: 10px 10px 0;
+      flex-shrink: 0;
+      position: relative;
+      z-index: 20
+    }
+
+    .search-row {
+      display: flex;
+      gap: 7px
+    }
+
+    .search-inp-wrap {
+      flex: 1;
+      position: relative;
+      display: flex;
+      align-items: center
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 10px;
+      color: var(--text3);
+      pointer-events: none
+    }
+
+    .search-input {
+      width: 100%;
+      height: 40px;
+      background: var(--bg2);
+      border: 1.5px solid var(--border);
+      border-radius: var(--r2);
+      color: var(--text);
+      font-size: 13px;
+      padding: 0 36px 0 36px
+    }
+
+    .search-input:focus {
+      border-color: var(--accent)
+    }
+
+    .search-clear {
+      position: absolute;
+      right: 8px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text3);
+      font-size: 14px;
+      display: none;
+      background: none;
+      width: 20px;
+      height: 20px;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%
+    }
+
+    .search-calc {
+      width: 40px;
+      height: 40px;
+      background: var(--bg2);
+      border: 1.5px solid var(--border);
+      border-radius: var(--r2);
+      color: var(--text2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0
+    }
+
+    /* ===== SEARCH RESULTS ===== */
+    .sr-box {
+      position: absolute;
+      top: calc(100% + 4px);
+      left: 10px;
+      right: 10px;
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: var(--r2);
+      max-height: 280px;
+      overflow-y: auto;
+      box-shadow: var(--shadow);
+      display: none;
+      z-index: 30
+    }
+
+    .sr-box.show {
+      display: block
+    }
+
+    .sr-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 9px 12px;
+      border-bottom: 1px solid var(--border);
+      cursor: pointer;
+      transition: background var(--tr)
+    }
+
+    .sr-item:last-child {
+      border-bottom: none
+    }
+
+    .sr-item:active,
+    .sr-item:hover {
+      background: var(--bg3)
+    }
+
+    .sr-item.in-cart {
+      border-left: 3px solid var(--green)
+    }
+
+    .sr-emo {
+      width: 40px;
+      height: 40px;
+      border-radius: var(--r3);
+      background: var(--bg4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      flex-shrink: 0
+    }
+
+    .sr-info {
+      flex: 1;
+      min-width: 0
+    }
+
+    .sr-name {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis
+    }
+
+    .sr-meta {
+      font-size: 10px;
+      color: var(--text3);
+      margin-top: 1px
+    }
+
+    .sr-price {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--accent2);
+      flex-shrink: 0
+    }
+
+    .sr-calc-btn {
+      width: 32px;
+      height: 32px;
+      background: var(--bg4);
+      border-radius: var(--r3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text2);
+      flex-shrink: 0
+    }
+
+    /* ===== CART ===== */
+    .cart-area {
+      flex: 1;
+      overflow-y: auto;
+      padding: 8px 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      min-height: 0
+    }
+
+    .cart-empty {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      color: var(--text3);
+      gap: 12px
+    }
+
+    .cart-empty-icon {
+      font-size: 52px;
+      opacity: .2
+    }
+
+    .cart-empty p {
+      font-size: 12px;
+      font-weight: 500
+    }
+
+    .cart-item {
+      background: var(--bg2);
+      border-radius: var(--r2);
+      border: 1.5px solid var(--border);
+      padding: 9px 10px;
+      transition: all var(--tr);
+      cursor: pointer
+    }
+
+    .cart-item:hover {
+      border-color: var(--border2)
+    }
+
+    .cart-item.selected {
+      border-color: var(--accent);
+      background: rgba(79, 142, 247, .06);
+      box-shadow: 0 0 0 3px rgba(79, 142, 247, .08)
+    }
+
+    .ci-top {
+      display: flex;
+      align-items: center;
+      gap: 7px
+    }
+
+    .ci-num {
+      font-size: 10px;
+      color: var(--text3);
+      font-family: var(--mono);
+      min-width: 16px;
+      text-align: center
+    }
+
+    .ci-name {
+      flex: 1;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text);
+      min-width: 0;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis
+    }
+
+    .ci-unit-price {
+      font-size: 10px;
+      color: var(--text3)
+    }
+
+    .ci-total {
+      font-size: 13px;
+      font-weight: 700;
+      background: linear-gradient(90deg, var(--accent2), var(--purple));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      flex-shrink: 0
+    }
+
+    .ci-bot {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 7px
+    }
+
+    .qty-wrap {
+      display: flex;
+      align-items: center;
+      gap: 5px
+    }
+
+    .qty-btn {
+      width: 28px;
+      height: 28px;
+      border-radius: var(--r3);
+      background: var(--bg3);
+      color: var(--text);
+      font-size: 16px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid var(--border)
+    }
+
+    .qty-btn:active {
+      background: var(--accent);
+      color: #fff;
+      border-color: var(--accent)
+    }
+
+    .qty-inp {
+      width: 44px;
+      height: 28px;
+      background: var(--bg3);
+      border: 1.5px solid var(--border);
+      border-radius: var(--r3);
+      color: var(--text);
+      font-size: 12px;
+      text-align: center;
+      font-family: var(--mono);
+      font-weight: 600
+    }
+
+    .ci-del-btn {
+      background: none;
+      color: var(--red);
+      font-size: 11px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 3px;
+      padding: 4px 6px;
+      border-radius: var(--r3)
+    }
+
+    .ci-del-btn:hover {
+      background: rgba(242, 87, 87, .1)
+    }
+
+    /* cart quick actions */
+    .cia-wrap {
+      overflow: hidden;
+      max-height: 0;
+      transition: max-height .22s ease
+    }
+
+    .cart-item.selected .cia-wrap {
+      max-height: 68px
+    }
+
+    .cia-inner {
+      padding-top: 7px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px
+    }
+
+    .cia-row {
+      display: flex;
+      gap: 4px;
+      overflow-x: auto;
+      padding-bottom: 1px
+    }
+
+    .cia-btn {
+      flex-shrink: 0;
+      height: 27px;
+      padding: 0 10px;
+      border-radius: var(--r3);
+      background: var(--bg4);
+      color: var(--text2);
+      font-size: 11px;
+      font-weight: 600;
+      border: 1px solid var(--border);
+      white-space: nowrap
+    }
+
+    .cia-btn.sum {
+      background: rgba(79, 142, 247, .1);
+      color: var(--accent2);
+      border-color: rgba(79, 142, 247, .2)
+    }
+
+    .cia-btn:active {
+      transform: scale(.95)
+    }
+
+    /* ===== FOOTER ===== */
+    .pos-footer {
+      height: var(--fh);
+      background: var(--bg2);
+      border-top: 1px solid var(--border);
+      padding: 0 12px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-shrink: 0;
+      position: relative;
+      z-index: 5
+    }
+
+    .ft-totals {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      min-width: 0
+    }
+
+    .ft-row {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 6px
+    }
+
+    .ft-lbl {
+      font-size: 10px;
+      color: var(--text3);
+      font-weight: 500;
+      white-space: nowrap
+    }
+
+    .ft-val {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text2);
+      font-family: var(--mono)
+    }
+
+    .ft-val.big {
+      font-size: 14px;
+      font-weight: 800;
+      color: var(--text)
+    }
+
+    .ft-cust {
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--green);
+      max-width: 90px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis
+    }
+
+    .ft-cust-btn {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background: var(--bg3);
+      border: 1.5px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text2);
+      flex-shrink: 0;
+      position: relative;
+      transition: all var(--tr)
+    }
+
+    .ft-cust-btn.has-cust {
+      background: linear-gradient(135deg, var(--green), #059669);
+      color: #fff;
+      border-color: transparent;
+      box-shadow: 0 0 16px rgba(16, 217, 138, .4)
+    }
+
+    .pay-wrap {
+      position: relative;
+      flex-shrink: 0
+    }
+
+    .pay-quick {
+      position: absolute;
+      bottom: 48px;
+      right: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .15s, transform .15s;
+      transform: translateY(8px)
+    }
+
+    .pay-quick.show {
+      opacity: 1;
+      pointer-events: all;
+      transform: translateY(0)
+    }
+
+    .pq-btn {
+      height: 34px;
+      padding: 0 14px;
+      border-radius: var(--r2);
+      font-size: 12px;
+      font-weight: 700;
+      color: #fff;
+      white-space: nowrap;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      box-shadow: var(--shadow2)
+    }
+
+    .pq-naqd {
+      background: var(--greeng)
+    }
+
+    .pq-bank {
+      background: var(--accentg)
+    }
+
+    .pq-click {
+      background: var(--purpleg)
+    }
+
+    .pay-btn {
+      height: 42px;
+      padding: 0 16px;
+      border-radius: var(--r2);
+      background: var(--greeng);
+      color: #fff;
+      font-size: 13px;
+      font-weight: 700;
+      display: none;
+      align-items: center;
+      gap: 7px;
+      box-shadow: 0 4px 20px rgba(16, 217, 138, .4)
+    }
+
+    .pay-btn.show {
+      display: flex
+    }
+
+    /* ===== MODALS ===== */
+    .mo {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, .7);
+      z-index: 200;
+      display: none;
+      align-items: flex-end;
+      justify-content: center;
+      backdrop-filter: blur(3px)
+    }
+
+    .mo.open {
+      display: flex
+    }
+
+    .mo.center {
+      align-items: center
+    }
+
+    .modal {
+      background: var(--bg2);
+      border-radius: var(--r) var(--r) 0 0;
+      width: 100%;
+      max-width: 500px;
+      max-height: 92vh;
+      overflow-y: auto;
+      border: 1px solid var(--border);
+      border-bottom: none;
+      box-shadow: var(--shadow)
+    }
+
+    .mo.center .modal {
+      border-radius: var(--r);
+      border: 1px solid var(--border);
+      max-height: 88vh;
+      margin: 16px
+    }
+
+    .mh {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 15px 18px;
+      border-bottom: 1px solid var(--border);
+      background: linear-gradient(135deg, rgba(79, 142, 247, .05), rgba(139, 92, 246, .05))
+    }
+
+    .mt {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 8px
+    }
+
+    .mc {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: var(--bg3);
+      color: var(--text2);
+      font-size: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid var(--border)
+    }
+
+    .mb {
+      padding: 16px 18px
+    }
+
+    /* NUMPAD */
+    .numpad {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 7px;
+      margin-top: 12px
+    }
+
+    .np {
+      height: 48px;
+      border-radius: var(--r2);
+      background: var(--bg3);
+      color: var(--text);
+      font-size: 17px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid var(--border);
+      transition: all var(--tr)
+    }
+
+    .np:active {
+      transform: scale(.93);
+      background: var(--accent);
+      color: #fff;
+      border-color: var(--accent)
+    }
+
+    .np.op {
+      background: var(--bg4);
+      color: var(--accent2)
+    }
+
+    .np.eq {
+      background: var(--accentg);
+      color: #fff;
+      border: none;
+      box-shadow: var(--shadowg)
+    }
+
+    .np.del {
+      background: var(--redg);
+      color: #fff;
+      border: none
+    }
+
+    /* Calc inputs */
+    .calc-inps {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin-bottom: 12px
+    }
+
+    .ci-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 4px
+    }
+
+    .ci-lbl {
+      font-size: 10px;
+      color: var(--text3);
+      text-transform: uppercase;
+      letter-spacing: .6px;
+      font-weight: 600
+    }
+
+    .ci-field {
+      height: 40px;
+      background: var(--bg3);
+      border: 1.5px solid var(--border);
+      border-radius: var(--r2);
+      color: var(--text);
+      font-size: 14px;
+      font-weight: 700;
+      text-align: center;
+      width: 100%;
+      font-family: var(--mono)
+    }
+
+    .ci-field.af {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(79, 142, 247, .15)
+    }
+
+    /* FORM */
+    .fr {
+      margin-bottom: 12px
+    }
+
+    .fl {
+      font-size: 11px;
+      color: var(--text3);
+      margin-bottom: 5px;
+      display: block;
+      text-transform: uppercase;
+      letter-spacing: .5px;
+      font-weight: 600
+    }
+
+    .fi {
+      width: 100%;
+      height: 40px;
+      background: var(--bg3);
+      border: 1.5px solid var(--border);
+      border-radius: var(--r2);
+      color: var(--text);
+      font-size: 13px;
+      padding: 0 12px
+    }
+
+    .fi:focus {
+      border-color: var(--accent)
+    }
+
+    select.fi {
+      appearance: none;
+      cursor: pointer
+    }
+
+    .fta {
+      width: 100%;
+      height: 72px;
+      background: var(--bg3);
+      border: 1.5px solid var(--border);
+      border-radius: var(--r2);
+      color: var(--text);
+      font-size: 13px;
+      padding: 9px 12px;
+      resize: none
+    }
+
+    .btn {
+      width: 100%;
+      height: 44px;
+      border-radius: var(--r2);
+      font-size: 13px;
+      font-weight: 700;
+      margin-top: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px
+    }
+
+    .btn-g {
+      background: var(--greeng);
+      color: #fff;
+      box-shadow: 0 4px 20px rgba(16, 217, 138, .3)
+    }
+
+    .btn-b {
+      background: var(--accentg);
+      color: #fff;
+      box-shadow: var(--shadowg)
+    }
+
+    .btn-r {
+      background: var(--redg);
+      color: #fff;
+      box-shadow: 0 4px 20px rgba(242, 87, 87, .3)
+    }
+
+    .btn-ghost {
+      background: var(--bg4);
+      color: var(--text2);
+      border: 1px solid var(--border)
+    }
+
+    /* PAY MODAL */
+    .pay-inp-r {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 10px
+    }
+
+    .pil {
+      width: 64px;
+      font-size: 12px;
+      color: var(--text2);
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 5px
+    }
+
+    .piw {
+      flex: 1;
+      position: relative
+    }
+
+    .pi {
+      height: 40px;
+      background: var(--bg3);
+      border: 1.5px solid var(--border);
+      border-radius: var(--r2);
+      color: var(--text);
+      font-size: 14px;
+      padding: 0 40px 0 12px;
+      width: 100%;
+      font-family: var(--mono);
+      font-weight: 600
+    }
+
+    .pi:focus {
+      border-color: var(--accent)
+    }
+
+    .pi-fill {
+      position: absolute;
+      right: 4px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 30px;
+      height: 30px;
+      border-radius: var(--r3);
+      background: var(--accentg);
+      color: #fff;
+      font-size: 16px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 8px rgba(79, 142, 247, .4)
+    }
+
+    /* SUMMARY BOX */
+    .sbox {
+      background: var(--bg3);
+      border-radius: var(--r2);
+      padding: 12px;
+      margin-bottom: 12px;
+      border: 1px solid var(--border)
+    }
+
+    .srow {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 5px
+    }
+
+    .srow:last-child {
+      margin-bottom: 0
+    }
+
+    .slbl {
+      font-size: 11px;
+      color: var(--text3)
+    }
+
+    .sval {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text);
+      font-family: var(--mono)
+    }
+
+    .sval.g {
+      color: var(--green)
+    }
+
+    .sval.r {
+      color: var(--red)
+    }
+
+    .sval.big {
+      font-size: 16px
+    }
+
+    /* CUSTOMER */
+    .cust-inp {
+      height: 40px;
+      background: var(--bg3);
+      border: 1.5px solid var(--border);
+      border-radius: var(--r2);
+      color: var(--text);
+      font-size: 13px;
+      padding: 0 12px;
+      flex: 1
+    }
+
+    .cust-row {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 10px
+    }
+
+    .cust-list {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      max-height: 240px;
+      overflow-y: auto
+    }
+
+    .cust-card {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      background: var(--bg3);
+      border-radius: var(--r2);
+      border: 1.5px solid transparent;
+      cursor: pointer;
+      transition: all var(--tr)
+    }
+
+    .cust-card:hover {
+      border-color: var(--border2)
+    }
+
+    .cust-card.sel {
+      border-color: var(--accent);
+      background: rgba(79, 142, 247, .07)
+    }
+
+    .cust-av {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: var(--accentg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      font-weight: 800;
+      color: #fff;
+      flex-shrink: 0
+    }
+
+    .cust-av.green {
+      background: var(--greeng)
+    }
+
+    .cust-name {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text)
+    }
+
+    .cust-phone {
+      font-size: 10px;
+      color: var(--text3);
+      margin-top: 1px
+    }
+
+    .cust-debt {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--red);
+      flex-shrink: 0
+    }
+
+    /* PAGES */
+    .vpage {
+      display: none;
+      flex-direction: column;
+      height: 100%;
+      overflow: hidden;
+      min-height: 0
+    }
+
+    .vpage.active {
+      display: flex
+    }
+
+    .ph {
+      height: 46px;
+      background: var(--bg2);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      padding: 0 14px;
+      gap: 10px;
+      flex-shrink: 0
+    }
+
+    .pt {
+      font-size: 14px;
+      font-weight: 800;
+      color: var(--text);
+      flex: 1;
+      display: flex;
+      align-items: center;
+      gap: 8px
+    }
+
+    .pc {
+      flex: 1;
+      overflow-y: auto;
+      padding: 12px
+    }
+
+    /* TABLE */
+    .tw {
+      overflow-x: auto
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px
+    }
+
+    th {
+      background: var(--bg3);
+      color: var(--text3);
+      font-weight: 700;
+      padding: 9px 10px;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: .5px;
+      white-space: nowrap
+    }
+
+    td {
+      padding: 9px 10px;
+      border-bottom: 1px solid var(--border);
+      color: var(--text2);
+      vertical-align: middle
+    }
+
+    tr:last-child td {
+      border-bottom: none
+    }
+
+    tbody tr {
+      cursor: pointer;
+      transition: background var(--tr)
+    }
+
+    tbody tr:hover {
+      background: var(--bg3)
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 2px 8px;
+      border-radius: 10px;
+      font-size: 10px;
+      font-weight: 700
+    }
+
+    .bg {
+      background: rgba(16, 217, 138, .12);
+      color: var(--green)
+    }
+
+    .br {
+      background: rgba(242, 87, 87, .12);
+      color: var(--red)
+    }
+
+    .bb {
+      background: rgba(79, 142, 247, .12);
+      color: var(--accent2)
+    }
+
+    .by {
+      background: rgba(251, 191, 36, .12);
+      color: var(--yellow)
+    }
+
+    .bp {
+      background: rgba(139, 92, 246, .12);
+      color: var(--purple)
+    }
+
+    .prod-ico {
+      width: 34px;
+      height: 34px;
+      border-radius: var(--r3);
+      background: var(--bg4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 17px
+    }
+
+    /* CHIPS */
+    .chips {
+      display: flex;
+      gap: 6px;
+      overflow-x: auto;
+      margin-bottom: 10px;
+      padding-bottom: 2px
+    }
+
+    .chip {
+      flex-shrink: 0;
+      height: 30px;
+      padding: 0 13px;
+      border-radius: 15px;
+      background: var(--bg3);
+      color: var(--text3);
+      font-size: 11px;
+      font-weight: 600;
+      border: 1px solid var(--border)
+    }
+
+    .chip.on {
+      background: var(--accentg);
+      color: #fff;
+      border: none;
+      box-shadow: 0 2px 10px rgba(79, 142, 247, .35)
+    }
+
+    /* PAGE SEARCH */
+    .psearch {
+      display: flex;
+      gap: 7px;
+      margin-bottom: 12px
+    }
+
+    .psearch-inp {
+      flex: 1;
+      height: 38px;
+      background: var(--bg2);
+      border: 1.5px solid var(--border);
+      border-radius: var(--r2);
+      color: var(--text);
+      font-size: 12px;
+      padding: 0 12px
+    }
+
+    .psearch-inp:focus {
+      border-color: var(--accent)
+    }
+
+    .pfbtn {
+      height: 38px;
+      padding: 0 14px;
+      background: var(--bg2);
+      border: 1.5px solid var(--border);
+      border-radius: var(--r2);
+      color: var(--text2);
+      font-size: 12px;
+      font-weight: 600;
+      white-space: nowrap
+    }
+
+    /* SMENA CARDS */
+    .smena-card {
+      background: var(--bg2);
+      border-radius: var(--r);
+      border: 1px solid var(--border);
+      padding: 14px;
+      margin-bottom: 10px
+    }
+
+    .smena-ttl {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 7px
+    }
+
+    .smena-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 7px
+    }
+
+    .si {
+      background: var(--bg3);
+      border-radius: var(--r2);
+      padding: 11px;
+      text-align: center
+    }
+
+    .si-l {
+      font-size: 10px;
+      color: var(--text3);
+      margin-bottom: 4px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .4px
+    }
+
+    .si-v {
+      font-size: 14px;
+      font-weight: 800;
+      color: var(--text);
+      font-family: var(--mono)
+    }
+
+    /* PROFILE */
+    .psection {
+      background: var(--bg2);
+      border-radius: var(--r);
+      border: 1px solid var(--border);
+      padding: 16px;
+      margin-bottom: 10px
+    }
+
+    .psh {
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--text3);
+      text-transform: uppercase;
+      letter-spacing: .6px;
+      margin-bottom: 12px
+    }
+
+    .trow {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 5px 0
+    }
+
+    .tlbl {
+      font-size: 13px;
+      color: var(--text);
+      font-weight: 500
+    }
+
+    .toggle {
+      width: 46px;
+      height: 26px;
+      border-radius: 13px;
+      background: var(--bg4);
+      position: relative;
+      cursor: pointer;
+      transition: background .2s;
+      border: 1px solid var(--border)
+    }
+
+    .toggle.on {
+      background: var(--accent);
+      border-color: var(--accent)
+    }
+
+    .toggle::after {
+      content: '';
+      position: absolute;
+      left: 4px;
+      top: 3px;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: #fff;
+      transition: left .2s;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, .3)
+    }
+
+    .toggle.on::after {
+      left: 24px
+    }
+
+    /* TOAST */
+    .toast {
+      position: fixed;
+      top: 64px;
+      left: 50%;
+      transform: translateX(-50%) translateY(-8px);
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: var(--r2);
+      padding: 9px 18px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text);
+      box-shadow: var(--shadow);
+      z-index: 9999;
+      opacity: 0;
+      transition: all .22s;
+      pointer-events: none;
+      white-space: nowrap;
+      display: flex;
+      align-items: center;
+      gap: 7px
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0)
+    }
+
+    .toast.s {
+      border-color: var(--green);
+      color: var(--green)
+    }
+
+    .toast.e {
+      border-color: var(--red);
+      color: var(--red)
+    }
+
+    /* CONFIRM */
+    .conf-msg {
+      font-size: 13px;
+      color: var(--text2);
+      text-align: center;
+      padding: 8px 0 18px;
+      line-height: 1.6
+    }
+
+    .conf-btns {
+      display: flex;
+      gap: 8px
+    }
+
+    .conf-btns button {
+      flex: 1;
+      height: 42px;
+      border-radius: var(--r2);
+      font-size: 13px;
+      font-weight: 700
+    }
+
+    /* AMOUNT DISPLAY */
+    .adisp {
+      background: var(--bg3);
+      border-radius: var(--r2);
+      padding: 12px;
+      margin-bottom: 12px;
+      text-align: center;
+      border: 1px solid var(--border)
+    }
+
+    .adisp-l {
+      font-size: 10px;
+      color: var(--text3);
+      margin-bottom: 5px;
+      text-transform: uppercase;
+      letter-spacing: .6px;
+      font-weight: 600
+    }
+
+    .adisp-v {
+      font-size: 26px;
+      font-weight: 800;
+      font-family: var(--mono);
+      background: var(--accentg);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent
+    }
+
+    /* LOGIN */
+    .login-view {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      background: var(--bg);
+      padding: 24px;
+      background-image: radial-gradient(circle at 30% 40%, rgba(79, 142, 247, .06) 0%, transparent 60%),
+        radial-gradient(circle at 70% 80%, rgba(139, 92, 246, .06) 0%, transparent 60%)
+    }
+
+    .login-view.active {
+      display: flex
+    }
+
+    .login-card {
+      background: var(--bg2);
+      border-radius: var(--r);
+      border: 1px solid var(--border);
+      padding: 30px 24px;
+      width: 100%;
+      max-width: 360px;
+      box-shadow: var(--shadow)
+    }
+
+    .login-logo {
+      text-align: center;
+      margin-bottom: 6px
+    }
+
+    .login-title {
+      font-size: 26px;
+      font-weight: 800;
+      background: var(--accentg);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent
+    }
+
+    .login-sub {
+      font-size: 12px;
+      color: var(--text3);
+      text-align: center;
+      margin-bottom: 22px
+    }
+
+    .smena-pill {
+      background: var(--bg3);
+      border-radius: var(--r2);
+      padding: 10px 14px;
+      margin-bottom: 16px;
+      font-size: 11px;
+      color: var(--text2);
+      text-align: center;
+      border: 1px solid var(--border)
+    }
+
+    /* AMORT gradient line */
+    .gline {
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--accent), transparent);
+      margin: 10px 0
+    }
+
+    .cursor-pointer {
+      cursor: pointer;
+    }
+
+    .search-inp-wrap {
+      position: relative;
+      display: flex;
+      align-items: center;
+      width: 100%;
+    }
+
+    /* Chapdagi qidiruv ikonka */
+    .search-icon {
+      position: absolute;
+      left: 12px;
+      display: flex;
+      color: #888;
+    }
+
+    /* Input ichidagi masofalar */
+    .search-input {
+      width: 100%;
+      padding-left: 35px;
+      /* Chapdan joy */
+      padding-right: 65px;
+      /* O'ngdan joy (ikkinchi ikonka + x tugmasi uchun) */
+      height: 45px;
+    }
+
+    /* O'ngdagi barkod ikonka */
+    .barcode-icon {
+      position: absolute;
+      right: 40px;
+      /* X tugmasidan oldin */
+      cursor: pointer;
+      display: flex;
+      color: #555;
+    }
+
+    /* O'ngdagi "x" tozalash tugmasi */
+    .search-clear {
+      position: absolute;
+      right: 8px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      color: #888;
+    }
+
+    /* Kamera oynasi inputdan tashqarida bo'lishi kerak */
+    #reader {
+      position: absolute;
+      /* Yoki static qoldiring */
+      top: 100%;
+      left: 0;
+      width: 100%;
+      z-index: 100;
+      background: white;
+    }
+
+    .sr-item.focused {
+      background-color: #e0f7fa;
+      /* Fokus bo'lganda rang o'zgarishi */
+      border-left: 4px solid var(--green);
+      /* Chap tomonida yashil chiziq */
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- TOAST -->
+  <div id="toast" class="toast"></div>
+
+  <!-- LOGIN -->
+  <div class="login-view active" id="lv">
+    <div class="login-card">
+      <div class="login-logo">
+        <div
+          style="width:56px;height:56px;border-radius:16px;background:var(--accentg);display:flex;align-items:center;justify-content:center;margin:0 auto 10px;box-shadow:0 0 30px rgba(79,142,247,.5)">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <rect x="2" y="5" width="20" height="14" rx="2" />
+            <line x1="2" y1="10" x2="22" y2="10" />
+          </svg>
+        </div>
+      </div>
+      <div class="login-title">SavdoPro</div>
+      <div class="login-sub">Professional kassa tizimi</div>
+      <div class="gline"></div>
+      <div class="smena-pill" id="lv-smena">Smena ma'lumotlari yuklanmoqda...</div>
+      <div class="fr"><label class="fl">Login</label>
+        <input class="fi" id="lu" value="admin" placeholder="Foydalanuvchi nomi">
+      </div>
+      <div class="fr"><label class="fl">Parol</label>
+        <input class="fi" type="password" id="lp" value="1234" placeholder="••••••••">
+      </div>
+      <button class="btn btn-b" onclick="doLogin()" style="margin-top:6px">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+          stroke-linecap="round">
+          <path d="M15 3h4a2 2 0 012 2v14a2 2 0 01-2 2h-4" />
+          <polyline points="10 17 15 12 10 7" />
+          <line x1="15" y1="12" x2="3" y2="12" />
+        </svg>
+        Kirish
+      </button>
+    </div>
+  </div>
+
+  <!-- APP -->
+  <div id="app" style="display:none">
+    <!-- HEADER -->
+    <div class="header">
+      <button class="hbtn" onclick="toggleSB()">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+          stroke-linecap="round">
+          <line x1="3" y1="6" x2="21" y2="6" />
+          <line x1="3" y1="12" x2="21" y2="12" />
+          <line x1="3" y1="18" x2="21" y2="18" />
+        </svg>
+      </button>
+      <div class="hdr-logo cursor-pointer" onclick="showView('pos')">
+        <div class="hdr-logo-mark">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5"
+            stroke-linecap="round">
+            <rect x="2" y="5" width="20" height="14" rx="2" />
+            <line x1="2" y1="10" x2="22" y2="10" />
+          </svg>
+        </div>
+        <span class="hdr-title">SavdoPro</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:6px">
+        <button class="hbtn" onclick="openExpModal()" title="Xarajat qo'shish">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+            stroke-linecap="round">
+            <path d="M12 2v20M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6" />
+          </svg>
+        </button>
+        <button class="hbtn" onclick="openDcModal()" title="Mijozdan to'lov">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+            stroke-linecap="round">
+            <path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2" />
+            <circle cx="9" cy="7" r="4" />
+            <polyline points="16 11 18 13 22 9" />
+          </svg>
+        </button>
+        <button class="hbtn" onclick="showView('profile')" title="Profil">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+            stroke-linecap="round">
+            <circle cx="12" cy="8" r="4" />
+            <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" />
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- SIDEBAR -->
+    <div class="sb-overlay" id="sbo" onclick="toggleSB()"></div>
+    <div class="sidebar" id="sb">
+      <div class="sb-head">
+        <div class="sb-avatar" id="sb-av">A</div>
+        <div>
+          <div class="sb-name" id="sb-name">Admin</div>
+          <div class="sb-role" id="sb-role">Kassir</div>
+          <div class="sb-smena">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+              stroke-linecap="round">
+              <circle cx="12" cy="12" r="10" />
+              <polyline points="12 6 12 12 16 14" />
+            </svg>
+            <span id="sb-smena-txt">Smena faol</span>
+          </div>
+        </div>
+      </div>
+      <div class="sb-nav">
+        <div class="nav-item active" onclick="showView('pos');toggleSB()">
+          <span class="ni"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              stroke-width="2.2" stroke-linecap="round">
+              <rect x="2" y="5" width="20" height="14" rx="2" />
+              <line x1="2" y1="10" x2="22" y2="10" />
+            </svg></span>Bosh sahifa
+        </div>
+        <div class="nav-item" onclick="showView('products');toggleSB()">
+          <span class="ni"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              stroke-width="2.2" stroke-linecap="round">
+              <path d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+            </svg></span>Mahsulotlar
+        </div>
+        <div class="nav-item" onclick="showView('customers');toggleSB()">
+          <span class="ni"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              stroke-width="2.2" stroke-linecap="round">
+              <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" />
+              <circle cx="9" cy="7" r="4" />
+              <path d="M23 21v-2a4 4 0 00-3-3.87" />
+              <path d="M16 3.13a4 4 0 010 7.75" />
+            </svg></span>Mijozlar
+        </div>
+        <div class="nav-item" onclick="showView('sales');toggleSB()">
+          <span class="ni"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              stroke-width="2.2" stroke-linecap="round">
+              <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" />
+              <polyline points="14 2 14 8 20 8" />
+              <line x1="16" y1="13" x2="8" y2="13" />
+              <line x1="16" y1="17" x2="8" y2="17" />
+            </svg></span>Sotuvlar
+        </div>
+        <div class="nav-item" onclick="showView('payments');toggleSB()">
+          <span class="ni"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              stroke-width="2.2" stroke-linecap="round">
+              <rect x="2" y="5" width="20" height="14" rx="2" />
+              <line x1="2" y1="10" x2="22" y2="10" />
+            </svg></span>To'lovlar
+        </div>
+        <div class="nav-item" onclick="showView('expenses');toggleSB()">
+          <span class="ni"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              stroke-width="2.2" stroke-linecap="round">
+              <line x1="12" y1="2" x2="12" y2="22" />
+              <path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6" />
+            </svg></span>Xarajatlar
+        </div>
+        <div class="nav-item" onclick="showView('shifts');toggleSB()">
+          <span class="ni"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              stroke-width="2.2" stroke-linecap="round">
+              <rect x="3" y="4" width="18" height="18" rx="2" />
+              <line x1="16" y1="2" x2="16" y2="6" />
+              <line x1="8" y1="2" x2="8" y2="6" />
+              <line x1="3" y1="10" x2="21" y2="10" />
+            </svg></span>Smenalar
+        </div>
+        <div class="nav-item" onclick="showView('profile');toggleSB()">
+          <span class="ni"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              stroke-width="2.2" stroke-linecap="round">
+              <circle cx="12" cy="8" r="4" />
+              <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" />
+            </svg></span>Profil
+        </div>
+      </div>
+      <div class="sb-foot">
+        <div class="nav-item" onclick="closeShift()">
+          <span class="ni"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              stroke-width="2.2" stroke-linecap="round">
+              <rect x="3" y="11" width="18" height="11" rx="2" />
+              <path d="M7 11V7a5 5 0 0110 0v4" />
+            </svg></span>Smenani yopish
+        </div>
+        <div class="nav-item nav-danger" onclick="doLogout()">
+          <span class="ni"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              stroke-width="2.2" stroke-linecap="round">
+              <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4" />
+              <polyline points="16 17 21 12 16 7" />
+              <line x1="21" y1="12" x2="9" y2="12" />
+            </svg></span>Chiqish
+        </div>
+      </div>
+    </div>
+
+    <!-- VIEWS -->
+    <div class="views">
+
+      <!-- ===== POS ===== -->
+      <div class="pos-view" id="posView">
+        <!-- Invoice tabs -->
+        <div class="inv-tabs-wrap">
+          <div class="inv-add-btn">
+            <button onclick="addInvoice()" title="Yangi sotuv">+</button>
+          </div>
+          <div class="inv-tabs-scroll" id="invTabs"></div>
+        </div>
+
+        <!-- Search -->
+        <div class="search-wrap">
+          <div class="search-row">
+            <div class="search-inp-wrap">
+              <span class="search-icon">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+                  stroke-linecap="round">
+                  <circle cx="11" cy="11" r="8" />
+                  <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                </svg>
+              </span>
+              <input class="search-input" id="si" placeholder="Barkod / SKU / Nomi qidiring..."
+                oninput="onSI(this.value)" onkeydown="handleEnter(event)" autocomplete="off">
+
+              <span class="barcode-icon" onclick="toggleScanner()">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                  stroke-linecap="round">
+                  <line x1="2" y1="5" x2="2" y2="19" />
+                  <line x1="6" y1="5" x2="6" y2="19" />
+                  <line x1="10" y1="5" x2="10" y2="19" />
+                  <line x1="14" y1="5" x2="14" y2="19" />
+                  <line x1="18" y1="5" x2="18" y2="19" />
+                  <line x1="22" y1="5" x2="22" y2="19" />
+                </svg>
+              </span>
+
+              <div id="reader" style="width: 100%; display: none; margin-top: 10px;"></div>
+              <button class="search-clear" id="sc" onclick="clearSI()">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                  stroke-linecap="round">
+                  <line x1="18" y1="6" x2="6" y2="18" />
+                  <line x1="6" y1="6" x2="18" y2="18" />
+                </svg>
+              </button>
+            </div>
+            <button class="search-calc" onclick="openCalc()" title="Kalkulyator">
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round">
+                <rect x="4" y="2" width="16" height="20" rx="2" />
+                <line x1="8" y1="8" x2="8" y2="8" stroke-width="3" />
+                <line x1="12" y1="8" x2="12" y2="8" stroke-width="3" />
+                <line x1="16" y1="8" x2="16" y2="8" stroke-width="3" />
+                <line x1="8" y1="12" x2="8" y2="12" stroke-width="3" />
+                <line x1="12" y1="12" x2="12" y2="12" stroke-width="3" />
+                <line x1="16" y1="12" x2="16" y2="18" stroke-width="3" />
+                <line x1="8" y1="16" x2="8" y2="16" stroke-width="3" />
+                <line x1="12" y1="16" x2="12" y2="16" stroke-width="3" />
+              </svg>
+            </button>
+          </div>
+          <div class="sr-box" id="srbox"></div>
+        </div>
+
+        <!-- Cart -->
+        <div class="cart-area" id="cartArea">
+          <div class="cart-empty">
+            <div class="cart-empty-icon">🛒</div>
+            <p>Savat bo'sh — mahsulot qidiring</p>
+          </div>
+        </div>
+
+        <!-- FOOTER -->
+        <div class="pos-footer">
+          <div class="ft-totals">
+            <div class="ft-row">
+              <span class="ft-lbl">Chegirma</span>
+              <span class="ft-val" id="ftDisc">0 so'm</span>
+            </div>
+            <div class="ft-row">
+              <span class="ft-lbl">Jami to'lov</span>
+              <span class="ft-val big" id="ftTotal">0 so'm</span>
+            </div>
+            <span class="ft-cust" id="ftCustName"></span>
+          </div>
+          <button class="ft-cust-btn" id="ftCustBtn" onclick="openCustModal()" title="Mijoz biriktirish">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+              stroke-linecap="round">
+              <circle cx="12" cy="8" r="4" />
+              <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" />
+            </svg>
+          </button>
+          <div class="pay-wrap">
+            <div class="pay-quick" id="pq">
+              <button class="pq-btn pq-naqd" onclick="quickPay('naqd')">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                  stroke-linecap="round">
+                  <rect x="2" y="6" width="20" height="12" rx="2" />
+                  <circle cx="12" cy="12" r="3" />
+                </svg>Naqd
+              </button>
+              <button class="pq-btn pq-bank" onclick="quickPay('bank')">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                  stroke-linecap="round">
+                  <rect x="2" y="7" width="20" height="14" rx="2" />
+                  <path d="M16 3H8L2 7h20l-6-4z" />
+                </svg>Bank
+              </button>
+              <button class="pq-btn pq-click" onclick="quickPay('click')">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                  stroke-linecap="round">
+                  <rect x="5" y="2" width="14" height="20" rx="2" />
+                  <line x1="12" y1="18" x2="12" y2="18" stroke-width="3" />
+                </svg>Click
+              </button>
+            </div>
+            <button class="pay-btn" id="payBtn" onpointerdown="startPH()" onpointerup="endPH()" onpointerleave="endPH()"
+              onclick="openPayModal()">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                stroke-linecap="round">
+                <rect x="2" y="5" width="20" height="14" rx="2" />
+                <line x1="2" y1="10" x2="22" y2="10" />
+              </svg>
+              To'lov
+            </button>
+          </div>
+        </div>
+      </div><!-- /pos-view -->
+
+      <!-- ===== PRODUCTS ===== -->
+      <div class="vpage" id="productsPage">
+        <div class="ph">
+          <span class="pt">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+              stroke-linecap="round">
+              <path d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+            </svg>
+            Mahsulotlar
+          </span>
+          <button class="hbtn accent" onclick="openAddProd()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+              stroke-linecap="round">
+              <line x1="12" y1="5" x2="12" y2="19" />
+              <line x1="5" y1="12" x2="19" y2="12" />
+            </svg>
+          </button>
+        </div>
+        <div class="pc">
+          <div class="psearch">
+            <input class="psearch-inp" id="psi" placeholder="Qidirish..." oninput="renderProds()">
+            <button class="pfbtn" onclick="">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+                stroke-linecap="round" style="display:inline;margin-right:4px">
+                <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" />
+              </svg>
+              Filtr
+            </button>
+          </div>
+          <div class="chips" id="catChips"></div>
+          <div class="tw">
+            <table>
+              <thead>
+                <tr>
+                  <th></th>
+                  <th>Nomi</th>
+                  <th>Narx</th>
+                  <th>Qoldiq</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody id="prodTbody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== CUSTOMERS ===== -->
+      <div class="vpage" id="customersPage">
+        <div class="ph">
+          <span class="pt">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+              stroke-linecap="round">
+              <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" />
+              <circle cx="9" cy="7" r="4" />
+              <path d="M23 21v-2a4 4 0 00-3-3.87" />
+              <path d="M16 3.13a4 4 0 010 7.75" />
+            </svg>
+            Mijozlar
+          </span>
+          <button class="hbtn accent" onclick="openNewCustModal()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+              stroke-linecap="round">
+              <line x1="12" y1="5" x2="12" y2="19" />
+              <line x1="5" y1="12" x2="19" y2="12" />
+            </svg>
+          </button>
+        </div>
+        <div class="pc">
+          <div class="psearch">
+            <input class="psearch-inp" id="custPageSearch" placeholder="Ism yoki telefon..." oninput="renderCustPage()">
+          </div>
+          <div class="cust-list" id="custPageList" style="max-height:none"></div>
+        </div>
+      </div>
+
+      <!-- ===== SALES ===== -->
+      <div class="vpage" id="salesPage">
+        <div class="ph">
+          <span class="pt">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+              stroke-linecap="round">
+              <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" />
+              <polyline points="14 2 14 8 20 8" />
+            </svg>
+            Sotuvlar
+          </span>
+        </div>
+        <div class="pc">
+          <div class="psearch">
+            <input class="psearch-inp" id="saleSrch" placeholder="ID yoki summa..." oninput="renderSales()">
+          </div>
+          <div class="tw">
+            <table>
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Vaqt</th>
+                  <th>Jami</th>
+                  <th>Tur</th>
+                  <th>Mijoz</th>
+                </tr>
+              </thead>
+              <tbody id="saleTbody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== PAYMENTS ===== -->
+      <div class="vpage" id="paymentsPage">
+        <div class="ph">
+          <span class="pt">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+              stroke-linecap="round">
+              <rect x="2" y="5" width="20" height="14" rx="2" />
+              <line x1="2" y1="10" x2="22" y2="10" />
+            </svg>
+            To'lovlar
+          </span>
+        </div>
+        <div class="pc">
+          <div class="tw">
+            <table>
+              <thead>
+                <tr>
+                  <th>Vaqt</th>
+                  <th>Tur</th>
+                  <th>Summa</th>
+                  <th>Izoh</th>
+                </tr>
+              </thead>
+              <tbody id="payTbody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== EXPENSES ===== -->
+      <div class="vpage" id="expensesPage">
+        <div class="ph">
+          <span class="pt">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+              stroke-linecap="round">
+              <line x1="12" y1="2" x2="12" y2="22" />
+              <path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6" />
+            </svg>
+            Xarajatlar
+          </span>
+        </div>
+        <div class="pc">
+          <div class="tw">
+            <table>
+              <thead>
+                <tr>
+                  <th>Vaqt</th>
+                  <th>Tur</th>
+                  <th>Manba</th>
+                  <th>Summa</th>
+                </tr>
+              </thead>
+              <tbody id="expTbody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== SHIFTS ===== -->
+      <div class="vpage" id="shiftsPage">
+        <div class="ph">
+          <span class="pt">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+              stroke-linecap="round">
+              <rect x="3" y="4" width="18" height="18" rx="2" />
+              <line x1="16" y1="2" x2="16" y2="6" />
+              <line x1="8" y1="2" x2="8" y2="6" />
+              <line x1="3" y1="10" x2="21" y2="10" />
+            </svg>
+            Smenalar
+          </span>
+        </div>
+        <div class="pc" id="shiftsCont"></div>
+      </div>
+
+      <!-- ===== PROFILE ===== -->
+      <div class="vpage" id="profilePage">
+        <div class="ph"><span class="pt">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+              stroke-linecap="round">
+              <circle cx="12" cy="8" r="4" />
+              <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" />
+            </svg>
+            Profil
+          </span></div>
+        <div class="pc">
+          <div class="psection">
+            <div style="display:flex;align-items:center;gap:14px;margin-bottom:4px">
+              <div class="sb-avatar" id="pAvatar" style="width:56px;height:56px;font-size:22px">A</div>
+              <div>
+                <div style="font-size:16px;font-weight:800" id="pName">Admin</div>
+                <div style="font-size:11px;color:var(--text3);margin-top:2px" id="pRole">Kassir</div>
+              </div>
+            </div>
+          </div>
+          <div class="psection">
+            <div class="psh">Interfeys sozlamalari</div>
+            <div class="trow">
+              <span class="tlbl">🌙 Qora rejim (Dark Mode)</span>
+              <div class="toggle on" id="thTog" onclick="toggleTheme()"></div>
+            </div>
+          </div>
+          <div class="psection">
+            <div class="psh">Joriy smena</div>
+            <div id="profSmena"></div>
+          </div>
+          <button class="btn btn-r" onclick="closeShift()">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+              stroke-linecap="round">
+              <rect x="3" y="11" width="18" height="11" rx="2" />
+              <path d="M7 11V7a5 5 0 0110 0v4" />
+            </svg>
+            Smenani yopish
+          </button>
+          <button class="btn btn-ghost" onclick="doLogout()" style="margin-top:6px">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+              stroke-linecap="round">
+              <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4" />
+              <polyline points="16 17 21 12 16 7" />
+              <line x1="21" y1="12" x2="9" y2="12" />
+            </svg>
+            Chiqish
+          </button>
+        </div>
+      </div>
+
+    </div><!-- /views -->
+  </div><!-- /app -->
+
+  <!-- ============ MODALS ============ -->
+
+  <!-- CALC -->
+  <div class="mo center" id="mCalc">
+    <div class="modal" style="max-width:340px">
+      <div class="mh">
+        <span class="mt">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+            stroke-linecap="round">
+            <rect x="4" y="2" width="16" height="20" rx="2" />
+          </svg>
+          <span id="mCalcTitle">Kalkulyator</span>
+        </span>
+        <button class="mc" onclick="CM('mCalc')">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+            stroke-linecap="round">
+            <line x1="18" y1="6" x2="6" y2="18" />
+            <line x1="6" y1="6" x2="18" y2="18" />
+          </svg>
+        </button>
+      </div>
+      <div class="mb">
+        <div id="calcProd" style="font-size:12px;color:var(--accent2);font-weight:600;margin-bottom:10px"></div>
+        <div class="calc-inps" id="calcInps">
+          <div class="ci-wrap"><label class="ci-lbl">Qty</label><input class="ci-field af" id="cqty" readonly
+              onclick="setCI('qty')"></div>
+          <div class="ci-wrap"><label class="ci-lbl">Narx</label><input class="ci-field" id="cprc" readonly
+              onclick="setCI('prc')"></div>
+          <div class="ci-wrap"><label class="ci-lbl">Jami</label><input class="ci-field" id="ctot" readonly
+              onclick="setCI('tot')"></div>
+        </div>
+        <div id="calcGen" style="display:none">
+          <div class="adisp">
+            <div class="adisp-l">Umumiy summa</div>
+            <div class="adisp-v" id="cgVal">0</div>
+          </div>
+          <div class="fr"><label class="fl">Chegirma</label><input class="fi" id="cgDisc" readonly
+              style="font-family:var(--mono)"></div>
+        </div>
+        <div class="numpad" id="numpad"></div>
+        <button class="btn btn-b" onclick="applyCalc()" style="margin-top:10px">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+            stroke-linecap="round">
+            <polyline points="20 6 9 17 4 12" />
+          </svg>
+          Saqlash
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- PAY -->
+  <div class="mo" id="mPay">
+    <div class="modal">
+      <div class="mh">
+        <span class="mt">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+            stroke-linecap="round">
+            <rect x="2" y="5" width="20" height="14" rx="2" />
+            <line x1="2" y1="10" x2="22" y2="10" />
+          </svg>
+          To'lov oynasi
+        </span>
+        <button class="mc" onclick="CM('mPay')">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+            stroke-linecap="round">
+            <line x1="18" y1="6" x2="6" y2="18" />
+            <line x1="6" y1="6" x2="18" y2="18" />
+          </svg>
+        </button>
+      </div>
+      <div class="mb">
+        <div class="sbox" id="paySummary"></div>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:7px">
+          <span
+            style="font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.5px">Mijoz</span>
+          <button onclick="openInnerCust()"
+            style="background:none;color:var(--accent2);font-size:11px;font-weight:700;display:flex;align-items:center;gap:4px">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+              stroke-linecap="round">
+              <circle cx="11" cy="11" r="8" />
+              <line x1="21" y1="21" x2="16.65" y2="16.65" />
+            </svg>
+            Tanlash
+          </button>
+        </div>
+        <div id="paySelCust"
+          style="font-size:12px;color:var(--text3);margin-bottom:12px;padding:8px;background:var(--bg3);border-radius:var(--r2);border:1px solid var(--border)">
+          Tanlanmagan</div>
+
+        <div class="pay-inp-r">
+          <span class="pil">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2.2"
+              stroke-linecap="round">
+              <rect x="2" y="6" width="20" height="12" rx="2" />
+              <circle cx="12" cy="12" r="3" />
+            </svg>
+            Naqd
+          </span>
+          <div class="piw"><input class="pi" id="pNaqd" type="number" placeholder="0" oninput="updPayR()">
+            <button class="pi-fill" onclick="fillPI('pNaqd')">+</button>
+          </div>
+        </div>
+        <div class="pay-inp-r">
+          <span class="pil">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--accent2)" stroke-width="2.2"
+              stroke-linecap="round">
+              <rect x="2" y="7" width="20" height="14" rx="2" />
+              <path d="M16 3H8L2 7h20l-6-4z" />
+            </svg>
+            Bank
+          </span>
+          <div class="piw"><input class="pi" id="pBank" type="number" placeholder="0" oninput="updPayR()">
+            <button class="pi-fill" onclick="fillPI('pBank')">+</button>
+          </div>
+        </div>
+        <div class="pay-inp-r">
+          <span class="pil">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--purple)" stroke-width="2.2"
+              stroke-linecap="round">
+              <rect x="5" y="2" width="14" height="20" rx="2" />
+              <line x1="12" y1="18" x2="12" y2="18" stroke-width="3" />
+            </svg>
+            Click
+          </span>
+          <div class="piw"><input class="pi" id="pClick" type="number" placeholder="0" oninput="updPayR()">
+            <button class="pi-fill" onclick="fillPI('pClick')">+</button>
+          </div>
+        </div>
+
+        <div class="sbox" id="payRem" style="margin-top:10px"></div>
+        <button class="btn btn-g" onclick="finSale()">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+            stroke-linecap="round">
+            <polyline points="20 6 9 17 4 12" />
+          </svg>
+          Sotuvni yakunlash
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- CUSTOMER SELECT -->
+  <div class="mo" id="mCust">
+    <div class="modal">
+      <div class="mh">
+        <span class="mt">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+            stroke-linecap="round">
+            <circle cx="12" cy="8" r="4" />
+            <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" />
+          </svg>
+          Mijoz tanlash
+        </span>
+        <button class="mc" onclick="CM('mCust')">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+            stroke-linecap="round">
+            <line x1="18" y1="6" x2="6" y2="18" />
+            <line x1="6" y1="6" x2="18" y2="18" />
+          </svg>
+        </button>
+      </div>
+      <div class="mb">
+        <div class="cust-row">
+          <input class="cust-inp" id="custSrch" placeholder="Ism yoki telefon..." oninput="renderCL()">
+          <button class="pfbtn" onclick="openNewCustModal()"
+            style="height:40px;border-radius:var(--r2);background:var(--accentg);color:#fff;border:none">+
+            Yangi</button>
+        </div>
+        <div class="cust-list" id="custList"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- NEW CUSTOMER -->
+  <div class="mo center" id="mNewCust">
+    <div class="modal">
+      <div class="mh">
+        <span class="mt">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+            stroke-linecap="round">
+            <circle cx="12" cy="8" r="4" />
+            <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" />
+            <line x1="19" y1="3" x2="19" y2="9" />
+            <line x1="16" y1="6" x2="22" y2="6" />
+          </svg>
+          Yangi mijoz
+        </span>
+        <button class="mc" onclick="CM('mNewCust')">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+            stroke-linecap="round">
+            <line x1="18" y1="6" x2="6" y2="18" />
+            <line x1="6" y1="6" x2="18" y2="18" />
+          </svg>
+        </button>
+      </div>
+      <div class="mb">
+        <div class="fr"><label class="fl">Ism Familiya *</label><input class="fi" id="ncN"
+            placeholder="Abdulloh Karimov"></div>
+        <div class="fr"><label class="fl">Telefon</label><input class="fi" id="ncP" placeholder="+998 90 000 00 00">
+        </div>
+        <div class="fr"><label class="fl">Manzil</label><input class="fi" id="ncA" placeholder="Shahar, ko'cha"></div>
+        <div class="fr"><label class="fl">Avvalgi qarz (so'm)</label><input class="fi" type="number" id="ncD"
+            placeholder="0"></div>
+        <button class="btn btn-b" onclick="saveNC()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+            stroke-linecap="round">
+            <path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z" />
+            <polyline points="17 21 17 13 7 13 7 21" />
+            <polyline points="7 3 7 8 15 8" />
+          </svg>
+          Saqlash
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- EXPENSE -->
+  <div class="mo" id="mExp">
+    <div class="modal">
+      <div class="mh">
+        <span class="mt">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+            stroke-linecap="round">
+            <line x1="12" y1="2" x2="12" y2="22" />
+            <path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6" />
+          </svg>
+          Xarajat qo'shish
+        </span>
+        <button class="mc" onclick="CM('mExp')">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+            stroke-linecap="round">
+            <line x1="18" y1="6" x2="6" y2="18" />
+            <line x1="6" y1="6" x2="18" y2="18" />
+          </svg>
+        </button>
+      </div>
+      <div class="mb">
+        <div class="fr"><label class="fl">To'lov turi</label>
+          <select class="fi" id="eType">
+            <option value="naqd">💵 Naqd</option>
+            <option value="bank">🏦 Bank</option>
+            <option value="click">📱 Click</option>
+          </select>
+        </div>
+        <div class="fr"><label class="fl">Manba / Kategoriya</label><input class="fi" id="eSrc"
+            placeholder="Kommunal, ta'mirlash..."></div>
+        <div class="fr"><label class="fl">Summa (so'm)</label><input class="fi" type="number" id="eAmt" placeholder="0">
+        </div>
+        <div class="fr"><label class="fl">Izoh</label><textarea class="fta" id="eNote"
+            placeholder="Qo'shimcha ma'lumot..."></textarea></div>
+        <button class="btn btn-r" onclick="saveExp()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+            stroke-linecap="round">
+            <path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z" />
+            <polyline points="17 21 17 13 7 13 7 21" />
+          </svg>
+          Saqlash
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- DEBT COLLECT -->
+  <div class="mo" id="mDc">
+    <div class="modal">
+      <div class="mh">
+        <span class="mt">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+            stroke-linecap="round">
+            <path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2" />
+            <circle cx="9" cy="7" r="4" />
+            <polyline points="16 11 18 13 22 9" />
+          </svg>
+          Mijozdan to'lov
+        </span>
+        <button class="mc" onclick="CM('mDc')">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+            stroke-linecap="round">
+            <line x1="18" y1="6" x2="6" y2="18" />
+            <line x1="6" y1="6" x2="18" y2="18" />
+          </svg>
+        </button>
+      </div>
+      <div class="mb">
+        <div class="cust-row" style="margin-bottom:10px">
+          <input class="cust-inp" id="dcSrch" placeholder="Mijoz qidirish..." oninput="renderDcL()">
+        </div>
+        <div class="cust-list" id="dcList" style="margin-bottom:10px;max-height:180px"></div>
+        <div id="dcDet" style="display:none">
+          <div class="sbox" id="dcInfo"></div>
+          <div class="fr"><label class="fl">To'lov turi</label>
+            <select class="fi" id="dcType">
+              <option value="naqd">💵 Naqd</option>
+              <option value="bank">🏦 Bank</option>
+              <option value="click">📱 Click</option>
+            </select>
+          </div>
+          <div class="fr"><label class="fl">To'lov summasi</label><input class="fi" type="number" id="dcAmt"
+              placeholder="0" oninput="updDcR()"></div>
+          <div class="sbox" id="dcRem"></div>
+          <button class="btn btn-g" onclick="saveDc()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+              stroke-linecap="round">
+              <polyline points="20 6 9 17 4 12" />
+            </svg>
+            To'lovni saqlash
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SALE DETAIL -->
+  <div class="mo center" id="mSaleDet">
+    <div class="modal">
+      <div class="mh">
+        <span class="mt">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+            stroke-linecap="round">
+            <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" />
+            <polyline points="14 2 14 8 20 8" />
+          </svg>
+          Sotuv tafsiloti
+        </span>
+        <button class="mc" onclick="CM('mSaleDet')">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+            stroke-linecap="round">
+            <line x1="18" y1="6" x2="6" y2="18" />
+            <line x1="6" y1="6" x2="18" y2="18" />
+          </svg>
+        </button>
+      </div>
+      <div class="mb" id="saleDetBody"></div>
+    </div>
+  </div>
+
+  <!-- PRODUCT EDIT -->
+  <div class="mo center" id="mProd">
+    <div class="modal">
+      <div class="mh">
+        <span class="mt" id="mProdTitle">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+            stroke-linecap="round">
+            <path d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+          </svg>
+          Mahsulot
+        </span>
+        <button class="mc" onclick="CM('mProd')">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+            stroke-linecap="round">
+            <line x1="18" y1="6" x2="6" y2="18" />
+            <line x1="6" y1="6" x2="18" y2="18" />
+          </svg>
+        </button>
+      </div>
+      <div class="mb">
+        <div class="fr"><label class="fl">Nomi *</label><input class="fi" id="pN" placeholder="Mahsulot nomi"></div>
+        <div class="fr"><label class="fl">Kategoriya</label><input class="fi" id="pCat"
+            placeholder="Ichimlik, Oziq-ovqat..."></div>
+        <div class="fr"><label class="fl">SKU</label><input class="fi" id="pSku" placeholder="SKU kodi"></div>
+        <div class="fr"><label class="fl">Barcode</label><input class="fi" id="pBc" placeholder="Shtrix kod"></div>
+        <div class="fr"><label class="fl">Narxi (so'm)</label><input class="fi" type="number" id="pPr" placeholder="0">
+        </div>
+        <div class="fr"><label class="fl">Qoldiq (dona)</label><input class="fi" type="number" id="pSt" placeholder="0">
+        </div>
+        <button class="btn btn-b" onclick="saveProd()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+            stroke-linecap="round">
+            <path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z" />
+            <polyline points="17 21 17 13 7 13 7 21" />
+            <polyline points="7 3 7 8 15 8" />
+          </svg>
+          Saqlash
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONFIRM -->
+  <div class="mo center" id="mConf">
+    <div class="modal" style="max-width:300px">
+      <div class="mh">
+        <span class="mt" id="confTitle">Tasdiqlash</span>
+        <button class="mc" onclick="CM('mConf')">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+            stroke-linecap="round">
+            <line x1="18" y1="6" x2="6" y2="18" />
+            <line x1="6" y1="6" x2="18" y2="18" />
+          </svg>
+        </button>
+      </div>
+      <div class="mb">
+        <div class="conf-msg" id="confMsg"></div>
+        <div class="conf-btns">
+          <button class="btn btn-ghost" onclick="CM('mConf')" style="margin-top:0">Yo'q</button>
+          <button class="btn btn-r" id="confYes" style="margin-top:0">Ha, tasdiqlash</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SMENA CLOSE -->
+  <div class="mo center" id="mShiftClose">
+    <div class="modal">
+      <div class="mh">
+        <span class="mt">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+            stroke-linecap="round">
+            <rect x="3" y="11" width="18" height="11" rx="2" />
+            <path d="M7 11V7a5 5 0 0110 0v4" />
+          </svg>
+          Smenani yopish
+        </span>
+        <button class="mc" onclick="CM('mShiftClose')">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+            stroke-linecap="round">
+            <line x1="18" y1="6" x2="6" y2="18" />
+            <line x1="6" y1="6" x2="18" y2="18" />
+          </svg>
+        </button>
+      </div>
+      <div class="mb" id="shiftCloseBody"></div>
+    </div>
+  </div>
+
+  <!-- INNER CUST (in pay modal) -->
+  <div class="mo center" id="mInCust">
+    <div class="modal">
+      <div class="mh">
+        <span class="mt">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+            stroke-linecap="round">
+            <circle cx="12" cy="8" r="4" />
+            <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" />
+          </svg>
+          Mijoz tanlash
+        </span>
+        <button class="mc" onclick="CM('mInCust')">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+            stroke-linecap="round">
+            <line x1="18" y1="6" x2="6" y2="18" />
+            <line x1="6" y1="6" x2="18" y2="18" />
+          </svg>
+        </button>
+      </div>
+      <div class="mb">
+        <div class="cust-row">
+          <input class="cust-inp" id="inCustSrch" placeholder="Ism yoki telefon..." oninput="renderICL()">
+          <button class="pfbtn" onclick="openNewCustModal()"
+            style="height:40px;border-radius:var(--r2);background:var(--accentg);color:#fff;border:none">+
+            Yangi</button>
+        </div>
+        <div class="cust-list" id="inCustList"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+
+    const tg = window.Telegram.WebApp;
+
+    // Ilovani tayyorlash
+    tg.ready();
+    tg.expand(); // Maksimal yoyish
+
+    // Fullscreen (Agar Telegram versiyasi qo'llab-quvvatlasa)
+    if (tg.requestFullscreen) {
+      tg.requestFullscreen();
+    }
+
+    // Ranglarni sozlash (Footer va Header birlashishi uchun)
+    tg.setHeaderColor('#1e40af'); // Teparoq ko'k
+    tg.setBackgroundColor('#f3f4f6'); // Pastki va fon rangi
+
+    // Agar Telegram yangi versiya bo'lsa, pastki bar rangini o'zgartirish
+    if (tg.setBottomBarColor) {
+      tg.setBottomBarColor('#f3f4f6');
+    }
+
+    // Yopishdan oldin tasdiqlash
+    tg.enableClosingConfirmation();
+    // ===================== STATE =====================
+    const USERS = [{ username: 'admin', password: '1234', name: 'Abdulloh Karimov', role: 'Kassir' }];
+    let S = {
+      user: null, view: 'pos',
+      invs: [], activeInv: null,
+      prods: [], custs: [], sales: [], pays: [], exps: [], shifts: [], shift: null,
+      theme: 'dark', catFilter: 'all',
+      calcMode: 'prod', calcFocus: 'qty', calcProdIdx: -1, srCalcId: null,
+      selPayCust: null, dcCust: null, editProdId: null,
+      srFocusIndex: -1,
+    };
+
+    // ===================== STORAGE =====================
+    const ls = k => { try { const v = localStorage.getItem('pos2_' + k); return v ? JSON.parse(v) : null } catch { return null } };
+    const sv = (k, v) => { try { localStorage.setItem('pos2_' + k, JSON.stringify(v)) } catch { } };
+
+    // ===================== INIT =====================
+    function initData() {
+      S.prods = ls('prods') || [
+        { id: 'p1', name: 'Coca-Cola 0.5L', cat: 'Ichimlik', sku: 'CC05', bc: '46070341', price: 8000, stock: 120, e: '🥤' },
+        { id: 'p2', name: 'Pepsi 0.5L', cat: 'Ichimlik', sku: 'PP05', bc: '46070342', price: 7500, stock: 85, e: '🥤' },
+        { id: 'p3', name: "Lay's Original", cat: 'Snack', sku: 'LY01', bc: '46070343', price: 12000, stock: 60, e: '🍟' },
+        { id: 'p4', name: 'Snikers 50g', cat: 'Shirinlik', sku: 'SN50', bc: '46070344', price: 6000, stock: 200, e: '🍫' },
+        { id: 'p5', name: 'Non (dona)', cat: 'Non', sku: 'NON1', bc: '46070345', price: 3000, stock: 50, e: '🍞' },
+        { id: 'p6', name: 'Lipton Choy', cat: 'Ichimlik', sku: 'LP01', bc: '46070346', price: 18000, stock: 40, e: '🍵' },
+        { id: 'p7', name: 'Sut 1L', cat: 'Sut mahsuloti', sku: 'SUT1', bc: '46070347', price: 11000, stock: 30, e: '🥛' },
+        { id: 'p8', name: 'Tuxum (12 dona)', cat: 'Oziq-ovqat', sku: 'TUX1', bc: '46070348', price: 22000, stock: 25, e: '🥚' },
+      ];
+      S.custs = ls('custs') || [
+        { id: 'c1', name: 'Alisher Nazarov', phone: '+998901234567', addr: 'Toshkent', debt: 50000 },
+        { id: 'c2', name: 'Malika Yusupova', phone: '+998901234568', addr: 'Samarqand', debt: 0 },
+        { id: 'c3', name: 'Bobur Xolmatov', phone: '+998901234569', addr: 'Andijon', debt: 120000 },
+        { id: 'c4', name: 'Sarvinoz Qodiova', phone: '+998901234570', addr: 'Namangan', debt: 25000 },
+      ];
+      S.sales = ls('sales') || [
+        { id: 'S001', date: '2025-06-04T10:23:00', items: [{ pid: 'p1', name: 'Coca-Cola 0.5L', qty: 3, price: 8000, total: 24000 }, { pid: 'p3', name: "Lay's Original", qty: 2, price: 12000, total: 24000 }], disc: 0, total: 48000, pays: [{ type: 'naqd', amt: 48000 }], cid: null, status: 'paid' },
+        { id: 'S002', date: '2025-06-04T11:05:00', items: [{ pid: 'p4', name: 'Snikers 50g', qty: 5, price: 6000, total: 30000 }], disc: 5000, total: 25000, pays: [{ type: 'bank', amt: 25000 }], cid: 'c1', status: 'paid' },
+        { id: 'S003', date: '2025-06-04T13:20:00', items: [{ pid: 'p7', name: 'Sut 1L', qty: 2, price: 11000, total: 22000 }, { pid: 'p5', name: 'Non (dona)', qty: 3, price: 3000, total: 9000 }], disc: 0, total: 31000, pays: [{ type: 'click', amt: 31000 }], cid: 'c2', status: 'paid' },
+      ];
+      S.pays = ls('pays') || [
+        { id: 'P001', date: '2025-06-04T10:23:00', type: 'naqd', amt: 48000, note: 'Sotuv S001' },
+        { id: 'P002', date: '2025-06-04T11:05:00', type: 'bank', amt: 25000, note: 'Sotuv S002' },
+        { id: 'P003', date: '2025-06-04T13:20:00', type: 'click', amt: 31000, note: 'Sotuv S003' },
+      ];
+      S.exps = ls('exps') || [
+        { id: 'E001', date: '2025-06-04T09:00:00', ptype: 'naqd', src: "Do'kon xarajati", amt: 15000, note: 'Supurgi' },
+        { id: 'E002', date: '2025-06-04T12:00:00', ptype: 'bank', src: 'Kommunal', amt: 80000, note: 'Elektr' },
+      ];
+      S.shifts = ls('shifts') || [];
+      S.shift = ls('shift') || { id: 'sh' + Date.now(), start: new Date().toISOString(), user: 'admin', sales: 0, total: 0 };
+      sv('shift', S.shift);
+      S.theme = ls('theme') || 'dark';
+      document.documentElement.setAttribute('data-theme', S.theme);
+      updThemeTog();
+    }
+
+    // ===================== INVOICES =====================
+    function addInvoice() {
+      const id = Date.now();
+      S.invs.push({ id, items: [], disc: 0, cid: null });
+      S.activeInv = id;
+      renderTabs(); renderCart(); updFt();
+    }
+
+    function renderTabs() {
+      const el = document.getElementById('invTabs');
+      if (!S.invs.length) { el.innerHTML = ''; return; }
+      el.innerHTML = S.invs.map((inv, i) => {
+        const tot = invTotal(inv);
+        return `<div class="inv-tab ${inv.id === S.activeInv ? 'active' : ''}"
+      onclick="selInv(${inv.id})"
+      onpointerdown="startTH(${inv.id})" onpointerup="endTH()" onpointerleave="endTH()">
+      <div class="inv-tab-num">${i + 1}</div>
+      ${tot > 0 ? fmt(tot) : "Bo'sh"}
+    </div>`;
+      }).join('');
+    }
+
+    let thTimer;
+    function startTH(id) { thTimer = setTimeout(() => confCloseInv(id), 700); }
+    function endTH() { clearTimeout(thTimer); }
+
+    function confCloseInv(id) {
+      showConf('Oynani yopish', "Bu sotuv oynasini yopmoqchimisiz?", () => {
+        S.invs = S.invs.filter(i => i.id !== id);
+        if (S.activeInv === id) {
+          S.activeInv = S.invs.length ? S.invs[S.invs.length - 1].id : null;
+          if (!S.invs.length) addInvoice();
+        }
+        renderTabs(); renderCart(); updFt();
+      });
+    }
+
+    function selInv(id) {
+      S.activeInv = id; renderTabs(); renderCart(); updFt(); clearSI();
+    }
+
+    function getInv() { return S.invs.find(i => i.id === S.activeInv); }
+    function invTotal(inv) { return Math.max(0, inv.items.reduce((s, i) => s + i.total, 0) - (inv.disc || 0)); }
+
+    // ===================== SEARCH =====================
+    function onSI(val) {
+      S.srFocusIndex = -1;
+      const sc = document.getElementById('sc');
+      sc.style.display = val ? 'flex' : 'none';
+      if (!val) { hideSR(); return; }
+      const res = S.prods.filter(p => {
+        const q = val.toLowerCase();
+        return p.name.toLowerCase().includes(q) || p.sku.toLowerCase().includes(q) || p.bc.includes(val);
+      });
+      renderSR(res);
+    }
+
+    function handleEnter(e) {
+      const list = document.querySelectorAll('.sr-item');
+
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        if (S.srFocusIndex < list.length - 1) {
+          S.srFocusIndex++;
+          updateFocus();
+        }
+      }
+      else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        if (S.srFocusIndex > 0) {
+          S.srFocusIndex--;
+          updateFocus();
+        }
+      }
+      else if (e.key === 'Enter') {
+        e.preventDefault();
+        if (S.srFocusIndex >= 0 && list[S.srFocusIndex]) {
+          const currentIndex = S.srFocusIndex; // Indeksni saqlab qo'yamiz
+          list[currentIndex].click();
+
+          // Render tugashini kutamiz va fokusni qaytaramiz
+          setTimeout(() => {
+            S.srFocusIndex = currentIndex;
+            updateFocus();
+          }, 50);
+        } else {
+          // Enter bosilganda fokuslanmagan bo'lsa, birinchi elementni qo'shamiz
+          if (list.length > 0) {
+            list[0].click();
+          }
+        }
+      }
+    }
+
+    // Fokusni vizual o'zgartirish
+    function updateFocus(forceIndex = null) {
+      const list = document.querySelectorAll('.sr-item');
+      if (forceIndex !== null) S.srFocusIndex = forceIndex;
+
+      // Indeks chegaradan chiqib ketmasligini tekshiramiz
+      if (S.srFocusIndex >= list.length) S.srFocusIndex = list.length - 1;
+      if (S.srFocusIndex < 0 && list.length > 0) S.srFocusIndex = 0;
+
+      list.forEach((el, idx) => {
+        el.classList.toggle('focused', idx === S.srFocusIndex);
+        if (idx === S.srFocusIndex) {
+          el.scrollIntoView({ block: 'nearest' });
+        }
+      });
+    }
+
+    let html5QrCode;
+
+    function toggleScanner() {
+      // Qurilmani aniqlash (faqat mobil yoki planshet bo'lsa)
+      const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+
+      if (!isMobile) {
+        toast("Kamera faqat mobil qurilmalarda ishlaydi", 'e');
+        return;
+      }
+
+      const reader = document.getElementById('reader');
+      if (reader.style.display === 'block') {
+        stopScanner();
+      } else {
+        startScanner();
+      }
+    }
+
+    function startScanner() {
+      const reader = document.getElementById('reader');
+      reader.style.display = 'block';
+
+      html5QrCode = new Html5Qrcode("reader");
+      html5QrCode.start(
+        { facingMode: "environment" }, // Orqa kamera
+        { fps: 10, qrbox: { width: 250, height: 150 } },
+        (decodedText) => {
+          // 1. Barkod topilganda inputga yozamiz
+          document.getElementById('si').value = decodedText;
+
+          // 2. Mahsulotni izlaymiz va savatga qo'shamiz
+          const found = S.prods.find(p => p.bc === decodedText || p.sku === decodedText);
+          if (found) {
+            addToCart(found.id);
+            document.getElementById('si').value = '';
+            onSI('');
+          } else {
+            toast("Mahsulot topilmadi: " + decodedText, 'e');
+          }
+
+          // 3. Skanerni to'xtatamiz
+          stopScanner();
+        }
+      ).catch(err => {
+        toast("Kamera ochilmadi: " + err, 'e');
+      });
+    }
+
+    function stopScanner() {
+      if (html5QrCode) {
+        html5QrCode.stop().then(() => {
+          document.getElementById('reader').style.display = 'none';
+        }).catch(err => console.log("To'xtatishda xatolik"));
+      }
+    }
+
+    function renderSR(list) {
+      const el = document.getElementById('srbox');
+      const inv = getInv();
+      if (!list.length) {
+        el.innerHTML = '<div style="padding:14px;text-align:center;color:var(--text3);font-size:12px">Mahsulot topilmadi</div>';
+        el.classList.add('show'); return;
+      }
+      el.innerHTML = list.map(p => {
+        // Savatdan shu mahsulotni topamiz
+        const cartItem = inv && inv.items.find(i => i.pid === p.id);
+        const inCart = !!cartItem;
+
+        return `<div class="sr-item ${inCart ? 'in-cart' : ''}" onclick="addToCart('${p.id}')">
+      <div class="sr-emo">${p.e || '📦'}</div>
+      <div class="sr-info">
+        <div class="sr-name">
+            ${p.name} 
+            ${inCart ? `<span style="color:var(--green);font-size:9px">● Savatda: ${cartItem.qty} ta</span>` : ''}
+        </div>
+        <div class="sr-meta">SKU: ${p.sku} · ${p.bc} · Qoldiq: ${p.stock}</div>
+      </div>
+      <div class="sr-price">${fmt(p.price)}</div>
+      <button class="sr-calc-btn" onclick="event.stopPropagation();openSRCalc('${p.id}')">
+        <svg>...</svg>
+      </button>
+    </div>`;
+      }).join('');
+      el.classList.add('show');
+      if (S.srFocusIndex >= 0) {
+        updateFocus();
+      }
+    }
+
+    function hideSR() { document.getElementById('srbox').classList.remove('show'); }
+    function clearSI() {
+      document.getElementById('si').value = '';
+      document.getElementById('sc').style.display = 'none';
+      S.srFocusIndex = -1;
+      hideSR();
+    }
+
+    function openSRCalc(id) {
+      S.srCalcId = id;
+      const p = S.prods.find(x => x.id === id);
+      openCalcProd(p, null);
+    }
+
+    // ===================== CART =====================
+    function addToCart(pid, qty = 1, price = null) {
+      const inv = getInv(); if (!inv) return;
+      const p = S.prods.find(x => x.id === pid); if (!p) return;
+
+      // 1. Savatga qo'shish yoki yangilash
+      const ex = inv.items.find(i => i.pid === pid);
+
+      // Hammasini "tanlanmagan" holatga o'tkazamiz
+      inv.items.forEach(it => it.sel = false);
+
+      if (ex) {
+        // Agar mavjud bo'lsa, miqdorni oshiramiz
+        ex.qty += qty;
+        ex.total = ex.qty * ex.price;
+        ex.sel = true; // Mavjud bo'lganini tanlaymiz
+      } else {
+        // Agar yangi bo'lsa, ro'yxat boshiga qo'shamiz va tanlaymiz
+        inv.items.unshift({
+          pid,
+          name: p.name,
+          qty,
+          price: price || p.price,
+          total: (price || p.price) * qty,
+          sel: true
+        });
+      }
+
+      // 2. UI yangilash
+      renderCart();
+      updFt();
+      renderTabs();
+      toast(p.name + " savatga qo'shildi", 's');
+
+      // 3. Qidiruvni yangilash
+      const searchInput = document.getElementById('si');
+      if (searchInput) {
+        onSI(searchInput.value);
+      }
+    }
+
+    function renderCart() {
+      const el = document.getElementById('cartArea');
+      const inv = getInv();
+      if (!inv || !inv.items.length) {
+        el.innerHTML = '<div class="cart-empty"><div class="cart-empty-icon">🛒</div><p>Savat bo\'sh — mahsulot qidiring</p></div>';
+        document.getElementById('payBtn').classList.remove('show');
+        return;
+      }
+      document.getElementById('payBtn').classList.add('show');
+      el.innerHTML = inv.items.map((item, i) => {
+        const qBtns = [1, 2, 5, 10, 20, 50].map(v => `<button class="cia-btn" onclick="event.stopPropagation();setQ(${i},${v})">${v}</button>`).join('');
+        const sBtns = [5000, 10000, 20000, 50000, 100000, 200000].map(v => `<button class="cia-btn sum" onclick="event.stopPropagation();setSQ(${i},${v})">${fmts(v)}</button>`).join('');
+        return `<div class="cart-item ${item.sel ? 'selected' : ''}" onclick="togCI(${i})">
+      <div class="ci-top">
+        <span class="ci-num">${i + 1}</span>
+        <span class="ci-name">${item.name}</span>
+        <span class="ci-unit-price">${fmt(item.price)}</span>
+        <span class="ci-total">${fmt(item.total)}</span>
+      </div>
+      <div class="ci-bot">
+        <div class="qty-wrap">
+          <button class="qty-btn" onclick="event.stopPropagation();chQ(${i},-1)">−</button>
+          <input class="qty-inp" value="${item.qty}" onchange="setQD(${i},this.value)" onclick="event.stopPropagation()">
+          <button class="qty-btn" onclick="event.stopPropagation();chQ(${i},1)">+</button>
+        </div>
+        <button class="ci-del-btn" onclick="event.stopPropagation();delCI(${i})">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+          O'chirish
+        </button>
+      </div>
+      <div class="cia-wrap">
+        <div class="cia-inner">
+          <div class="cia-row">${qBtns}</div>
+          <div class="cia-row">${sBtns}</div>
+        </div>
+      </div>
+    </div>`;
+      }).join('');
+      const selectedItem = el.querySelector('.cart-item.selected');
+      if (selectedItem) {
+        selectedItem.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }
+    }
+
+    function togCI(i) {
+      const inv = getInv(); if (!inv) return;
+      inv.items.forEach((it, j) => { it.sel = (i === j ? !it.sel : false); });
+      renderCart();
+    }
+    function chQ(i, d) { const inv = getInv(); if (!inv) return; const it = inv.items[i]; it.qty = Math.max(0.001, it.qty + d); it.total = it.qty * it.price; renderCart(); updFt(); renderTabs(); }
+    function setQ(i, q) { const inv = getInv(); if (!inv) return; inv.items[i].qty = q; inv.items[i].total = q * inv.items[i].price; renderCart(); updFt(); renderTabs(); }
+    function setQD(i, v) { setQ(i, parseFloat(v) || 1); }
+    function setSQ(i, sum) { const inv = getInv(); if (!inv) return; const it = inv.items[i]; it.qty = parseFloat((sum / it.price).toFixed(3)); it.total = sum; renderCart(); updFt(); renderTabs(); }
+    function delCI(i) { const inv = getInv(); if (!inv) return; inv.items.splice(i, 1); renderCart(); updFt(); renderTabs(); }
+
+    // ===================== FOOTER =====================
+    function updFt() {
+      const inv = getInv();
+      const disc = inv ? inv.disc || 0 : 0;
+      const total = inv ? invTotal(inv) : 0;
+      document.getElementById('ftDisc').textContent = fmt(disc);
+      document.getElementById('ftTotal').textContent = fmt(total);
+      const cb = document.getElementById('ftCustBtn');
+      const cn = document.getElementById('ftCustName');
+      if (inv && inv.cid) {
+        const c = S.custs.find(x => x.id === inv.cid);
+        if (c) { cb.classList.add('has-cust'); cn.textContent = '👤 ' + c.name; }
+        else { cb.classList.remove('has-cust'); cn.textContent = ''; }
+      } else { cb.classList.remove('has-cust'); cn.textContent = ''; }
+    }
+
+    // ===================== CALC =====================
+    let cbuf = '';
+    function openCalc() {
+      const inv = getInv();
+      const si = inv ? inv.items.findIndex(i => i.sel) : -1;
+      if (si >= 0) openCalcProd(null, si);
+      else if (inv && inv.items.length) openCalcGen(inv);
+      else openCalcGen(null);
+    }
+
+    function openCalcProd(prod, idx) {
+      S.calcMode = 'prod'; S.calcProdIdx = idx === null ? -2 : idx;
+      let p = null, it = null;
+      if (typeof idx === 'number' && idx >= 0) {
+        const inv = getInv();
+        if (inv && Array.isArray(inv.items) && inv.items[idx]) {
+          it = inv.items[idx];
+          p = S.prods.find(x => x.id === it.pid) || { name: it.name, price: it.price || 0 };
+        } else {
+          // fallback: use provided prod or empty placeholder when item not found
+          it = null;
+          p = prod || { name: '', price: 0 };
+        }
+      } else {
+        p = prod || { name: '', price: 0 };
+      }
+      document.getElementById('calcProd').textContent = p ? p.name : '';
+      document.getElementById('calcInps').style.display = 'grid';
+      document.getElementById('calcGen').style.display = 'none';
+      document.getElementById('cqty').value = it ? it.qty : 1;
+      document.getElementById('cprc').value = it ? it.price : (p ? p.price : 0);
+      document.getElementById('ctot').value = it ? it.total : (p ? p.price : 0);
+      S.calcFocus = 'qty'; hiCI(); buildNP();
+      OM('mCalc');
+    }
+
+    function openCalcGen(inv) {
+      S.calcMode = 'gen';
+      document.getElementById('calcProd').textContent = '';
+      document.getElementById('calcInps').style.display = 'none';
+      document.getElementById('calcGen').style.display = 'block';
+      const tot = inv ? invTotal(inv) : 0;
+      document.getElementById('cgVal').textContent = fmt(tot);
+      document.getElementById('cgDisc').value = inv ? inv.disc || 0 : 0;
+      S.calcFocus = 'disc'; hiCI(); buildNP();
+      OM('mCalc');
+    }
+
+    function setCI(f) {
+      S.calcFocus = f;
+      S.calcFresh = true; // Yangi yozish boshlanayotganini belgilaymiz
+      hiCI();
+    }
+    function hiCI() {
+      ['cqty', 'cprc', 'ctot', 'cgDisc'].forEach(id => { const el = document.getElementById(id); if (el) el.classList.remove('af'); });
+      const map = { qty: 'cqty', prc: 'cprc', tot: 'ctot', disc: 'cgDisc' };
+      const el = document.getElementById(map[S.calcFocus]);
+      if (el) el.classList.add('af');
+    }
+
+    function buildNP() {
+      const nps = [
+        { l: '7' }, { l: '8' }, { l: '9' }, { l: '÷', c: 'op' },
+        { l: '4' }, { l: '5' }, { l: '6' }, { l: '×', c: 'op' },
+        { l: '1' }, { l: '2' }, { l: '3' }, { l: '−', c: 'op' },
+        { l: '0' }, { l: '.', c: 'op' }, { l: 'C', c: 'del' }, { l: '=', c: 'eq' } // 'C' qo'shildi
+      ];
+      document.getElementById('numpad').innerHTML = nps.map(n => `<button class="np ${n.c || ''}" onclick="npPress('${n.l}')">${n.l}</button>`).join('');
+    }
+
+    function npPress(v) {
+      const ids = { qty: 'cqty', prc: 'cprc', tot: 'ctot', disc: 'cgDisc' };
+      const id = ids[S.calcFocus];
+      const el = document.getElementById(id);
+      if (!el) return;
+
+      // "C" tugmasi uchun
+      if (v === 'C') { el.value = ''; cbuf = ''; S.calcFresh = false; syncCalcInps(); return; }
+
+      // Raqam bosilganda:
+      if (S.calcFresh && !['÷', '×', '−', '+', '='].includes(v)) {
+        el.value = ''; // Agar yangi yozish bo'lsa, eskisini o'chir
+        S.calcFresh = false; // Flagni o'chiramiz
+      }
+
+      let cur = el.value || '';
+      if (v === '⌫') { el.value = cur.slice(0, -1); syncCalcInps(); return; }
+
+      // ... eval qismi va boshqalar o'z holicha qoladi
+      if (['÷', '×', '−', '+'].includes(v)) { cbuf = (el.value || '0') + v; el.value = ''; return; }
+
+      el.value = cur + v;
+      syncCalcInps();
+    }
+
+    function syncCalcInps() {
+      if (S.calcMode !== 'prod') return;
+      const q = parseFloat(document.getElementById('cqty').value) || 0;
+      const p = parseFloat(document.getElementById('cprc').value) || 0;
+      const t = parseFloat(document.getElementById('ctot').value) || 0;
+      if (S.calcFocus === 'qty' || S.calcFocus === 'prc') document.getElementById('ctot').value = (q * p) || '';
+      if (S.calcFocus === 'tot' && p > 0) document.getElementById('cqty').value = parseFloat((t / p).toFixed(3)) || '';
+    }
+
+    function applyCalc() {
+      if (S.calcMode === 'prod') {
+        const qty = parseFloat(document.getElementById('cqty').value) || 1;
+        const price = parseFloat(document.getElementById('cprc').value) || 0;
+        const total = qty * price;
+        if (S.calcProdIdx === -2) {
+          if (S.srCalcId) {
+            const p = S.prods.find(x => x.id === S.srCalcId);
+            if (p) {
+              const inv = getInv(); if (!inv) return;
+              const ex = inv.items.find(i => i.pid === p.id);
+              if (ex) { ex.qty = qty; ex.price = price; ex.total = total; }
+              else inv.items.unshift({ pid: p.id, name: p.name, qty, price, total, sel: false });
+              renderCart(); updFt(); renderTabs(); toast(p.name + " savatga qo'shildi", 's');
+            }
+          }
+        } else if (S.calcProdIdx >= 0) {
+          const inv = getInv(); if (inv && inv.items[S.calcProdIdx]) {
+            const it = inv.items[S.calcProdIdx];
+            it.qty = qty; it.price = price; it.total = total;
+            renderCart(); updFt(); renderTabs();
+          }
+        }
+      } else {
+        const inv = getInv();
+        if (inv) { inv.disc = parseFloat(document.getElementById('cgDisc').value) || 0; updFt(); renderTabs(); }
+      }
+      CM('mCalc');
+    }
+
+    // ===================== PAY HOLD =====================
+    let phTimer;
+    function startPH() { phTimer = setTimeout(() => { document.getElementById('pq').classList.add('show'); }, 900); }
+    function endPH() { clearTimeout(phTimer); }
+    document.addEventListener('click', e => { if (!e.target.closest('.pay-wrap')) document.getElementById('pq').classList.remove('show'); });
+
+    function quickPay(type) {
+      const inv = getInv(); if (!inv || !inv.items.length) return;
+      document.getElementById('pq').classList.remove('show');
+      completeSale(inv, [{ type, amt: invTotal(inv) }]);
+    }
+
+    // ===================== PAY MODAL =====================
+    function openPayModal() {
+      const inv = getInv(); if (!inv || !inv.items.length) return;
+      ['pNaqd', 'pBank', 'pClick'].forEach(id => document.getElementById(id).value = '');
+      S.selPayCust = inv.cid ? S.custs.find(c => c.id === inv.cid) || null : null;
+      updPayCust(); renderPaySumm(); updPayR();
+      OM('mPay');
+    }
+
+    function renderPaySumm() {
+      const inv = getInv(); if (!inv) return;
+      const sub = inv.items.reduce((s, i) => s + i.total, 0);
+      const disc = inv.disc || 0;
+      const total = Math.max(0, sub - disc);
+      document.getElementById('paySummary').innerHTML = `
+    <div class="srow"><span class="slbl">Mahsulotlar:</span><span class="sval">${fmt(sub)}</span></div>
+    ${disc ? `<div class="srow"><span class="slbl">Chegirma:</span><span class="sval r">−${fmt(disc)}</span></div>` : ''}
+    <div class="srow"><span class="slbl" style="font-weight:700">To'lash kerak:</span><span class="sval g big">${fmt(total)}</span></div>
+  `;
+    }
+
+    function updPayR() {
+      const inv = getInv(); if (!inv) return;
+      const total = invTotal(inv);
+      const paid = (parseFloat(document.getElementById('pNaqd').value) || 0)
+        + (parseFloat(document.getElementById('pBank').value) || 0)
+        + (parseFloat(document.getElementById('pClick').value) || 0);
+      const rem = total - paid;
+      const el = document.getElementById('payRem');
+      if (rem > 0) el.innerHTML = `<div class="srow"><span class="slbl">Qoldiq:</span><span class="sval r big">${fmt(rem)}</span></div>`;
+      else if (rem < 0) el.innerHTML = `<div class="srow"><span class="slbl">Qaytim:</span><span class="sval g big">${fmt(Math.abs(rem))}</span></div>`;
+      else el.innerHTML = `<div class="srow"><span class="slbl">✓ To'liq to'landi</span><span class="sval g">${fmt(paid)}</span></div>`;
+    }
+
+    function fillPI(id) {
+      const inv = getInv(); if (!inv) return;
+      const total = invTotal(inv);
+      const paid = (parseFloat(document.getElementById('pNaqd').value) || 0)
+        + (parseFloat(document.getElementById('pBank').value) || 0)
+        + (parseFloat(document.getElementById('pClick').value) || 0);
+      document.getElementById(id).value = Math.max(0, total - paid) || 0;
+      updPayR();
+    }
+
+    function updPayCust() {
+      const el = document.getElementById('paySelCust');
+      if (S.selPayCust) {
+        el.innerHTML = `<div style="display:flex;align-items:center;gap:8px">
+      <div class="cust-av" style="width:30px;height:30px;font-size:12px">${S.selPayCust.name[0]}</div>
+      <div><div class="cust-name" style="font-size:12px">${S.selPayCust.name}</div>
+      ${S.selPayCust.debt ? `<div class="cust-debt" style="font-size:10px">Qarz: ${fmt(S.selPayCust.debt)}</div>` : ''}
+      </div></div>`;
+      } else el.textContent = 'Tanlanmagan';
+    }
+
+    function openInnerCust() { renderICL(); OM('mInCust'); }
+    function renderICL() {
+      const q = (document.getElementById('inCustSrch').value || '').toLowerCase();
+      const el = document.getElementById('inCustList');
+      const list = S.custs.filter(c => !q || c.name.toLowerCase().includes(q) || c.phone.includes(q));
+      el.innerHTML = list.map(c => `
+    <div class="cust-card ${S.selPayCust && S.selPayCust.id === c.id ? 'sel' : ''}" onclick="selPayCust('${c.id}')">
+      <div class="cust-av">${c.name[0]}</div>
+      <div style="flex:1"><div class="cust-name">${c.name}</div><div class="cust-phone">${c.phone || ''}</div></div>
+      ${c.debt ? `<div class="cust-debt">${fmt(c.debt)}</div>` : '<div class="cust-debt" style="color:var(--green)">Qarz yo\'q</div>'}
+    </div>`).join('');
+    }
+
+    function selPayCust(id) {
+      S.selPayCust = S.custs.find(c => c.id === id) || null;
+      updPayCust(); CM('mInCust');
+      const inv = getInv(); if (inv) { inv.cid = id; } updFt();
+    }
+
+    function finSale() {
+      const inv = getInv(); if (!inv || !inv.items.length) return;
+      const total = invTotal(inv);
+      const naqd = parseFloat(document.getElementById('pNaqd').value) || 0;
+      const bank = parseFloat(document.getElementById('pBank').value) || 0;
+      const click = parseFloat(document.getElementById('pClick').value) || 0;
+      const paid = naqd + bank + click;
+      const debt = total - paid;
+      if (debt > 0 && !S.selPayCust) { toast('Qarzga sotish uchun mijoz tanlang!', 'e'); return; }
+      const pays = [];
+      if (naqd > 0) pays.push({ type: 'naqd', amt: naqd });
+      if (bank > 0) pays.push({ type: 'bank', amt: bank });
+      if (click > 0) pays.push({ type: 'click', amt: click });
+      if (!pays.length) pays.push({ type: 'naqd', amt: total });
+      CM('mPay');
+      completeSale(inv, pays, debt);
+    }
+
+    function completeSale(inv, pays, debt = 0) {
+      const sale = {
+        id: 'S' + Date.now(), date: new Date().toISOString(),
+        items: [...inv.items], disc: inv.disc || 0, total: invTotal(inv),
+        pays, cid: inv.cid || (S.selPayCust ? S.selPayCust.id : null),
+        status: debt > 0 ? 'debt' : 'paid', debt
+      };
+      S.sales.unshift(sale); sv('sales', S.sales);
+      pays.forEach(p => { S.pays.unshift({ id: 'P' + Date.now() + Math.random(), date: sale.date, type: p.type, amt: p.amt, note: 'Sotuv ' + sale.id }); });
+      sv('pays', S.pays);
+      if (debt > 0 && sale.cid) { const c = S.custs.find(x => x.id === sale.cid); if (c) { c.debt = (c.debt || 0) + debt; sv('custs', S.custs); } }
+      if (S.shift) { S.shift.sales++; S.shift.total = (S.shift.total || 0) + sale.total; sv('shift', S.shift); }
+      S.invs = S.invs.filter(i => i.id !== inv.id); S.selPayCust = null;
+      if (!S.invs.length) addInvoice();
+      else { S.activeInv = S.invs[S.invs.length - 1].id; renderTabs(); renderCart(); updFt(); }
+      toast('Sotuv yakunlandi: ' + fmt(sale.total), 's');
+    }
+
+    // ===================== CUSTOMER MODAL =====================
+    function openCustModal() { document.getElementById('custSrch').value = ''; renderCL(); OM('mCust'); }
+    function renderCL() {
+      const q = (document.getElementById('custSrch').value || '').toLowerCase();
+      const inv = getInv();
+      const el = document.getElementById('custList');
+      const list = S.custs.filter(c => !q || c.name.toLowerCase().includes(q) || c.phone.includes(q));
+      el.innerHTML = list.map(c => `
+    <div class="cust-card ${inv && inv.cid === c.id ? 'sel' : ''}" onclick="selInvCust('${c.id}')">
+      <div class="cust-av ${c.debt <= 0 ? 'green' : ''}">${c.name[0]}</div>
+      <div style="flex:1"><div class="cust-name">${c.name}</div><div class="cust-phone">${c.phone || ''} ${c.addr ? '· ' + c.addr : ''}</div></div>
+      ${c.debt ? `<div class="cust-debt">${fmt(c.debt)}</div>` : ''}
+    </div>`).join('');
+    }
+
+    function selInvCust(id) {
+      const inv = getInv(); if (inv) { inv.cid = inv.cid === id ? null : id; }
+      updFt(); CM('mCust');
+      const inv2 = getInv();
+      if (inv2 && inv2.cid) toast("Mijoz biriktirildi", 's');
+    }
+
+    // ===================== NEW CUSTOMER =====================
+    function openNewCustModal() {
+      ['ncN', 'ncP', 'ncA', 'ncD'].forEach(id => document.getElementById(id).value = '');
+      OM('mNewCust');
+    }
+
+    function saveNC() {
+      const name = document.getElementById('ncN').value.trim();
+      if (!name) { toast('Ism kiritish shart!', 'e'); return; }
+      const c = {
+        id: 'c' + Date.now(), name, phone: document.getElementById('ncP').value.trim(),
+        addr: document.getElementById('ncA').value.trim(), debt: parseFloat(document.getElementById('ncD').value) || 0
+      };
+      S.custs.push(c); sv('custs', S.custs);
+      CM('mNewCust');
+      const inv = getInv(); if (inv) { inv.cid = c.id; } updFt();
+      renderCL(); renderICL(); renderDcL(); renderCustPage();
+      toast('Yangi mijoz saqlandi', 's');
+    }
+
+    // ===================== CUSTOMERS PAGE =====================
+    function renderCustPage() {
+      const q = (document.getElementById('custPageSearch').value || '').toLowerCase();
+      const el = document.getElementById('custPageList');
+      const list = S.custs.filter(c => !q || c.name.toLowerCase().includes(q) || (c.phone || '').includes(q));
+      if (!list.length) { el.innerHTML = '<div style="padding:20px;text-align:center;color:var(--text3);font-size:12px">Mijoz topilmadi</div>'; return; }
+      el.innerHTML = list.map(c => `
+    <div class="cust-card" onclick="showCustDetail('${c.id}')">
+      <div class="cust-av ${c.debt <= 0 ? 'green' : ''}">${c.name[0]}</div>
+      <div style="flex:1">
+        <div class="cust-name">${c.name}</div>
+        <div class="cust-phone">${c.phone || ''} ${c.addr ? '· ' + c.addr : ''}</div>
+      </div>
+      ${c.debt > 0 ? `<div class="cust-debt">${fmt(c.debt)}</div>` : '<span class="badge bg">Qarzsiz</span>'}
+    </div>`).join('');
+    }
+
+    function showCustDetail(id) {
+      const c = S.custs.find(x => x.id === id); if (!c) return;
+      const sales = S.sales.filter(s => s.cid === id);
+      document.getElementById('saleDetBody').innerHTML = `
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;padding:12px;background:var(--bg3);border-radius:var(--r2)">
+      <div class="cust-av ${c.debt <= 0 ? 'green' : ''}" style="width:48px;height:48px;font-size:20px">${c.name[0]}</div>
+      <div>
+        <div style="font-size:15px;font-weight:800">${c.name}</div>
+        <div style="font-size:11px;color:var(--text3)">${c.phone || ''} · ${c.addr || ''}</div>
+        ${c.debt ? `<div style="font-size:12px;font-weight:700;color:var(--red);margin-top:3px">Qarz: ${fmt(c.debt)}</div>` : '<div style="font-size:11px;color:var(--green);margin-top:3px">Qarzsiz ✓</div>'}
+      </div>
+    </div>
+    <div style="font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">Sotuvlar tarixi</div>
+    ${sales.length ? sales.map(s => `
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 10px;background:var(--bg3);border-radius:var(--r3);margin-bottom:5px">
+        <div>
+          <div style="font-size:11px;font-weight:600">${s.id}</div>
+          <div style="font-size:10px;color:var(--text3)">${new Date(s.date).toLocaleString()}</div>
+        </div>
+        <div style="text-align:right">
+          <div style="font-size:12px;font-weight:700;color:var(--accent2)">${fmt(s.total)}</div>
+          <span class="badge ${s.status === 'paid' ? 'bg' : 'br'}" style="font-size:9px">${s.status === 'paid' ? 'To\'langan' : 'Qarz'}</span>
+        </div>
+      </div>`).join('') : '<div style="text-align:center;padding:12px;color:var(--text3);font-size:12px">Sotuv yo\'q</div>'}
+  `;
+      OM('mSaleDet');
+    }
+
+    // ===================== EXPENSE =====================
+    function openExpModal() { document.getElementById('eType').value = 'naqd';['eSrc', 'eAmt', 'eNote'].forEach(id => document.getElementById(id).value = ''); OM('mExp'); }
+    function saveExp() {
+      const amt = parseFloat(document.getElementById('eAmt').value) || 0;
+      if (!amt) { toast('Summa kiritish shart!', 'e'); return; }
+      const exp = {
+        id: 'E' + Date.now(), date: new Date().toISOString(), ptype: document.getElementById('eType').value,
+        src: document.getElementById('eSrc').value, amt, note: document.getElementById('eNote').value
+      };
+      S.exps.unshift(exp); sv('exps', S.exps); CM('mExp'); renderExps(); toast('Xarajat saqlandi', 's');
+    }
+
+    // ===================== DEBT COLLECT =====================
+    function openDcModal() { S.dcCust = null; document.getElementById('dcSrch').value = ''; renderDcL(); document.getElementById('dcDet').style.display = 'none'; OM('mDc'); }
+    function renderDcL() {
+      const q = (document.getElementById('dcSrch').value || '').toLowerCase();
+      const el = document.getElementById('dcList');
+      const list = S.custs.filter(c => c.debt > 0 && (!q || c.name.toLowerCase().includes(q) || c.phone.includes(q)));
+      if (!list.length) { el.innerHTML = '<div style="padding:10px;text-align:center;font-size:12px;color:var(--text3)">Qarzdor mijoz yo\'q</div>'; return; }
+      el.innerHTML = list.map(c => `
+    <div class="cust-card ${S.dcCust && S.dcCust.id === c.id ? 'sel' : ''}" onclick="selDcCust('${c.id}')">
+      <div class="cust-av">${c.name[0]}</div>
+      <div style="flex:1"><div class="cust-name">${c.name}</div><div class="cust-phone">${c.phone || ''}</div></div>
+      <div class="cust-debt">${fmt(c.debt)}</div>
+    </div>`).join('');
+    }
+
+    function selDcCust(id) {
+      S.dcCust = S.custs.find(c => c.id === id) || null; renderDcL();
+      if (S.dcCust) { document.getElementById('dcDet').style.display = 'block'; document.getElementById('dcAmt').value = ''; updDcR(); }
+    }
+
+    function updDcR() {
+      const c = S.dcCust; if (!c) return;
+      const amt = parseFloat(document.getElementById('dcAmt').value) || 0;
+      const rem = c.debt - amt;
+      document.getElementById('dcInfo').innerHTML = `
+    <div class="srow"><span class="slbl">Mijoz:</span><span class="sval">${c.name}</span></div>
+    <div class="srow"><span class="slbl">Joriy qarz:</span><span class="sval r">${fmt(c.debt)}</span></div>`;
+      document.getElementById('dcRem').innerHTML = `
+    <div class="srow"><span class="slbl">Qoldiq qarz:</span><span class="sval ${rem > 0 ? 'r' : 'g'}">${fmt(Math.max(0, rem))}</span></div>`;
+    }
+
+    function saveDc() {
+      const c = S.dcCust; if (!c) return;
+      const amt = parseFloat(document.getElementById('dcAmt').value) || 0;
+      if (!amt) { toast('Summa kiritish shart!', 'e'); return; }
+      c.debt = Math.max(0, c.debt - amt); sv('custs', S.custs);
+      S.pays.unshift({ id: 'P' + Date.now(), date: new Date().toISOString(), type: document.getElementById('dcType').value, amt, note: "Qarz to'lovi: " + c.name });
+      sv('pays', S.pays); CM('mDc'); renderPays(); renderCustPage(); toast("To'lov saqlandi", 's');
+    }
+
+    // ===================== PRODUCTS PAGE =====================
+    function renderProds() {
+      const q = (document.getElementById('psi').value || '').toLowerCase();
+      const cats = ['all', ...new Set(S.prods.map(p => p.cat))];
+      document.getElementById('catChips').innerHTML = cats.map(c => `<button class="chip ${S.catFilter === c ? 'on' : ''}" onclick="setCat('${c}')">${c === 'all' ? 'Barchasi' : c}</button>`).join('');
+      const list = S.prods.filter(p => {
+        const mq = !q || p.name.toLowerCase().includes(q) || p.sku.toLowerCase().includes(q) || p.bc.includes(q);
+        const mc = S.catFilter === 'all' || p.cat === S.catFilter;
+        return mq && mc;
+      });
+      document.getElementById('prodTbody').innerHTML = list.map(p => `
+    <tr onclick="openEditProd('${p.id}')">
+      <td><div class="prod-ico">${p.e || '📦'}</div></td>
+      <td><div style="font-size:12px;font-weight:700">${p.name}</div><div style="font-size:10px;color:var(--text3)">${p.cat}</div></td>
+      <td><span style="font-family:var(--mono);font-size:12px;font-weight:700;color:var(--accent2)">${fmt(p.price)}</span></td>
+      <td><span style="font-size:12px;font-weight:600">${p.stock}</span></td>
+      <td><span class="badge ${p.stock > 10 ? 'bg' : 'br'}">${p.stock > 10 ? 'Mavjud' : 'Kam'}</span></td>
+    </tr>`).join('');
+    }
+
+    function setCat(c) { S.catFilter = c; renderProds(); }
+
+    function openAddProd() {
+      S.editProdId = null;
+      document.getElementById('mProdTitle').innerHTML = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg> Yangi mahsulot`;
+      ['pN', 'pCat', 'pSku', 'pBc', 'pPr', 'pSt'].forEach(id => document.getElementById(id).value = '');
+      OM('mProd');
+    }
+
+    function openEditProd(id) {
+      const p = S.prods.find(x => x.id === id); if (!p) return;
+      S.editProdId = id;
+      document.getElementById('mProdTitle').innerHTML = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg> Mahsulot tahrirlash`;
+      document.getElementById('pN').value = p.name; document.getElementById('pCat').value = p.cat;
+      document.getElementById('pSku').value = p.sku; document.getElementById('pBc').value = p.bc;
+      document.getElementById('pPr').value = p.price; document.getElementById('pSt').value = p.stock;
+      OM('mProd');
+    }
+
+    function saveProd() {
+      const name = document.getElementById('pN').value.trim();
+      if (!name) { toast('Nomi shart!', 'e'); return; }
+      if (S.editProdId) {
+        const p = S.prods.find(x => x.id === S.editProdId);
+        if (p) {
+          p.name = name; p.cat = document.getElementById('pCat').value; p.sku = document.getElementById('pSku').value;
+          p.bc = document.getElementById('pBc').value; p.price = parseFloat(document.getElementById('pPr').value) || 0;
+          p.stock = parseFloat(document.getElementById('pSt').value) || 0;
+        }
+      } else {
+        S.prods.push({
+          id: 'p' + Date.now(), name, cat: document.getElementById('pCat').value,
+          sku: document.getElementById('pSku').value, bc: document.getElementById('pBc').value,
+          price: parseFloat(document.getElementById('pPr').value) || 0,
+          stock: parseFloat(document.getElementById('pSt').value) || 0, e: '📦'
+        });
+      }
+      sv('prods', S.prods); CM('mProd'); renderProds(); toast('Saqlandi', 's');
+    }
+
+    // ===================== SALES PAGE =====================
+    function renderSales() {
+      const q = (document.getElementById('saleSrch').value || '').toLowerCase();
+      const list = S.sales.filter(s => !q || s.id.toLowerCase().includes(q) || (s.total + '').includes(q));
+      document.getElementById('saleTbody').innerHTML = list.map(s => {
+        const c = s.cid ? S.custs.find(x => x.id === s.cid) : null;
+        const ptypes = [...new Set(s.pays.map(p => p.type))];
+        return `<tr onclick="showSaleDet('${s.id}')">
+      <td style="font-family:var(--mono);font-size:10px;color:var(--text3)">${s.id.slice(-6)}</td>
+      <td style="font-size:10px">${new Date(s.date).toLocaleString('uz-UZ', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })}</td>
+      <td><span style="font-family:var(--mono);font-size:12px;font-weight:700;color:var(--accent2)">${fmt(s.total)}</span></td>
+      <td>${ptypes.map(t => `<span class="badge bb" style="font-size:9px;margin-right:2px">${t}</span>`).join('')}</td>
+      <td style="font-size:11px;max-width:80px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${c ? c.name : '—'}</td>
+    </tr>`;
+      }).join('');
+    }
+
+    function showSaleDet(id) {
+      const s = S.sales.find(x => x.id === id); if (!s) return;
+      const c = s.cid ? S.custs.find(x => x.id === s.cid) : null;
+      document.getElementById('saleDetBody').innerHTML = `
+    <div class="sbox">
+      <div class="srow"><span class="slbl">ID:</span><span class="sval" style="font-family:var(--mono)">${s.id}</span></div>
+      <div class="srow"><span class="slbl">Vaqt:</span><span class="sval">${new Date(s.date).toLocaleString()}</span></div>
+      <div class="srow"><span class="slbl">Mijoz:</span><span class="sval">${c ? c.name : '—'}</span></div>
+      <div class="srow"><span class="slbl">Jami:</span><span class="sval g big">${fmt(s.total)}</span></div>
+      ${s.disc ? `<div class="srow"><span class="slbl">Chegirma:</span><span class="sval r">−${fmt(s.disc)}</span></div>` : ''}
+      ${s.debt ? `<div class="srow"><span class="slbl">Qarz:</span><span class="sval r">${fmt(s.debt)}</span></div>` : ''}
+    </div>
+    <div style="font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">Mahsulotlar</div>
+    ${s.items.map(it => `<div style="display:flex;justify-content:space-between;padding:8px 10px;border-bottom:1px solid var(--border);font-size:12px;align-items:center">
+      <span style="font-weight:600;flex:1">${it.name}</span>
+      <span style="color:var(--text3);margin:0 8px">${it.qty}×${fmt(it.price)}</span>
+      <span style="font-weight:700;color:var(--accent2)">${fmt(it.total)}</span>
+    </div>`).join('')}
+    <div style="font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin:10px 0 8px">To'lovlar</div>
+    ${s.pays.map(p => `<div style="display:flex;justify-content:space-between;padding:6px 10px;align-items:center">
+      <span class="badge bb">${p.type}</span>
+      <span style="font-weight:700;font-family:var(--mono);color:var(--green)">${fmt(p.amt)}</span>
+    </div>`).join('')}
+  `;
+      OM('mSaleDet');
+    }
+
+    // ===================== PAYMENTS PAGE =====================
+    function renderPays() {
+      document.getElementById('payTbody').innerHTML = S.pays.map(p => `
+    <tr>
+      <td style="font-size:10px">${new Date(p.date).toLocaleString('uz-UZ', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })}</td>
+      <td><span class="badge bb">${p.type}</span></td>
+      <td><span style="font-family:var(--mono);font-size:12px;font-weight:700;color:var(--green)">${fmt(p.amt)}</span></td>
+      <td style="font-size:11px;color:var(--text3)">${p.note || '—'}</td>
+    </tr>`).join('');
+    }
+
+    // ===================== EXPENSES PAGE =====================
+    function renderExps() {
+      document.getElementById('expTbody').innerHTML = S.exps.map(e => `
+    <tr>
+      <td style="font-size:10px">${new Date(e.date).toLocaleString('uz-UZ', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })}</td>
+      <td><span class="badge by">${e.ptype}</span></td>
+      <td style="font-size:11px">${e.src || '—'}</td>
+      <td><span style="font-family:var(--mono);font-size:12px;font-weight:700;color:var(--red)">${fmt(e.amt)}</span></td>
+    </tr>`).join('');
+    }
+
+    // ===================== SHIFTS PAGE =====================
+    function renderShifts() {
+      const el = document.getElementById('shiftsCont'); let h = '';
+      if (S.shift) {
+        const sh = S.shift;
+        h += `<div class="smena-card" style="border-color:var(--green)">
+      <div class="smena-ttl">
+        <span style="width:8px;height:8px;border-radius:50%;background:var(--green);display:inline-block;box-shadow:0 0 8px var(--green)"></span>
+        Joriy smena · Faol
+      </div>
+      <div class="smena-grid">
+        <div class="si"><div class="si-l">Boshlandi</div><div class="si-v" style="font-size:11px">${new Date(sh.start).toLocaleString()}</div></div>
+        <div class="si"><div class="si-l">Kassir</div><div class="si-v" style="font-size:11px">${sh.user}</div></div>
+        <div class="si"><div class="si-l">Sotuvlar</div><div class="si-v">${sh.sales || 0}</div></div>
+        <div class="si"><div class="si-l">Jami savdo</div><div class="si-v" style="font-size:11px">${fmt(sh.total || 0)}</div></div>
+      </div>
+    </div>`;
+      }
+      if (S.shifts.length) {
+        h += '<div style="font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">Yopilgan smenalar</div>';
+        h += S.shifts.map(sh => `<div class="smena-card">
+      <div class="smena-ttl">Smena #${sh.id.slice(-4)}</div>
+      <div class="smena-grid">
+        <div class="si"><div class="si-l">Boshlandi</div><div class="si-v" style="font-size:10px">${new Date(sh.start).toLocaleString()}</div></div>
+        <div class="si"><div class="si-l">Tugatildi</div><div class="si-v" style="font-size:10px">${sh.end ? new Date(sh.end).toLocaleString() : '—'}</div></div>
+        <div class="si"><div class="si-l">Sotuvlar</div><div class="si-v">${sh.sales || 0}</div></div>
+        <div class="si"><div class="si-l">Jami</div><div class="si-v" style="font-size:11px">${fmt(sh.total || 0)}</div></div>
+      </div>
+    </div>`).join('');
+      }
+      el.innerHTML = h || '<div style="text-align:center;padding:20px;color:var(--text3);font-size:12px">Smena ma\'lumotlari yo\'q</div>';
+    }
+
+    // ===================== SHIFT CLOSE =====================
+    function closeShift() {
+      if (!S.shift) { toast("Faol smena yo'q", 'e'); return; }
+      const sh = S.shift;
+      document.getElementById('shiftCloseBody').innerHTML = `
+    <div class="smena-grid" style="margin-bottom:14px">
+      <div class="si"><div class="si-l">Sotuvlar</div><div class="si-v">${sh.sales || 0}</div></div>
+      <div class="si"><div class="si-l">Jami savdo</div><div class="si-v" style="font-size:11px">${fmt(sh.total || 0)}</div></div>
+    </div>
+    <p style="font-size:12px;color:var(--text2);text-align:center;margin-bottom:14px;line-height:1.5">Smenani yopmoqchimisiz?<br>Bu amalni bekor qilib bo'lmaydi.</p>
+    <div class="conf-btns">
+      <button class="btn btn-ghost" onclick="CM('mShiftClose')" style="margin-top:0">Bekor qilish</button>
+      <button class="btn btn-r" onclick="doCloseShift()" style="margin-top:0">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+        Ha, yopish
+      </button>
+    </div>`;
+      OM('mShiftClose');
+    }
+
+    function doCloseShift() {
+      const sh = S.shift; sh.end = new Date().toISOString();
+      S.shifts.unshift(sh); sv('shifts', S.shifts);
+      S.shift = null; localStorage.removeItem('pos2_shift');
+      CM('mShiftClose'); doLogout();
+    }
+
+    // ===================== PROFILE =====================
+    function renderProfile() {
+      const u = S.user; if (!u) return;
+      document.getElementById('pAvatar').textContent = u.name[0];
+      document.getElementById('pName').textContent = u.name;
+      document.getElementById('pRole').textContent = u.role;
+      const sh = S.shift;
+      document.getElementById('profSmena').innerHTML = sh ?
+        `<div class="smena-grid">
+      <div class="si"><div class="si-l">Boshlandi</div><div class="si-v" style="font-size:10px">${new Date(sh.start).toLocaleTimeString()}</div></div>
+      <div class="si"><div class="si-l">Sotuvlar</div><div class="si-v">${sh.sales || 0}</div></div>
+    </div>`: "<p style='font-size:12px;color:var(--text3)'>Smena yo'q</p>";
+    }
+
+    // ===================== VIEWS =====================
+    function showView(view) {
+      S.view = view;
+      document.getElementById('posView').style.display = view === 'pos' ? 'flex' : 'none';
+      ['products', 'customers', 'sales', 'payments', 'expenses', 'shifts', 'profile'].forEach(v => {
+        const el = document.getElementById(v + 'Page');
+        if (el) el.classList.toggle('active', v === view);
+      });
+      document.querySelectorAll('.nav-item').forEach((el, i) => {
+        const vs = ['pos', 'products', 'customers', 'sales', 'payments', 'expenses', 'shifts', 'profile'];
+        el.classList.toggle('active', vs[i] === view);
+      });
+      if (view === 'products') renderProds();
+      if (view === 'customers') renderCustPage();
+      if (view === 'sales') renderSales();
+      if (view === 'payments') renderPays();
+      if (view === 'expenses') renderExps();
+      if (view === 'shifts') renderShifts();
+      if (view === 'profile') renderProfile();
+    }
+
+    // ===================== MODAL HELPERS =====================
+    function OM(id) { document.getElementById(id).classList.add('open'); }
+    function CM(id) { document.getElementById(id).classList.remove('open'); }
+    document.addEventListener('click', e => {
+      if (e.target.classList.contains('mo')) { e.target.classList.remove('open'); }
+    });
+
+    function showConf(title, msg, cb) {
+      document.getElementById('confTitle').textContent = title;
+      document.getElementById('confMsg').textContent = msg;
+      document.getElementById('confYes').onclick = () => { CM('mConf'); cb(); };
+      OM('mConf');
+    }
+
+    // ===================== SIDEBAR =====================
+    function toggleSB() {
+      document.getElementById('sb').classList.toggle('open');
+      document.getElementById('sbo').classList.toggle('open');
+    }
+
+    // ===================== LOGIN/LOGOUT =====================
+    function doLogin() {
+      const u = document.getElementById('lu').value.trim();
+      const p = document.getElementById('lp').value.trim();
+      const user = USERS.find(x => x.username === u && x.password === p);
+      if (!user) { toast("Login yoki parol noto'g'ri!", 'e'); return; }
+      S.user = user;
+      document.getElementById('lv').classList.remove('active');
+      document.getElementById('app').style.display = 'flex';
+      document.getElementById('sb-av').textContent = user.name[0];
+      document.getElementById('sb-name').textContent = user.name;
+      document.getElementById('sb-role').textContent = user.role;
+      document.getElementById('sb-smena-txt').textContent = S.shift ? `Smena · ${S.shift.sales || 0} sotuv` : 'Smena yo\'q';
+      if (!S.invs.length) addInvoice();
+      else { renderTabs(); renderCart(); updFt(); }
+      toast('Xush kelibsiz, ' + user.name + '!', 's');
+    }
+
+    function doLogout() {
+      S.user = null;
+      document.getElementById('app').style.display = 'none';
+      document.getElementById('lv').classList.add('active');
+      document.getElementById('lp').value = '';
+      const sh = S.shift;
+      document.getElementById('lv-smena').textContent = sh ? `Smena faol · ${sh.sales || 0} sotuv · ${fmt(sh.total || 0)}` : 'Smena ochiq emas';
+    }
+
+    // ===================== THEME =====================
+    function toggleTheme() {
+      S.theme = S.theme === 'dark' ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', S.theme);
+      sv('theme', S.theme); updThemeTog();
+    }
+    function updThemeTog() { const t = document.getElementById('thTog'); if (t) t.classList.toggle('on', S.theme === 'dark'); }
+
+    // ===================== FORMAT =====================
+    function fmt(n) { return new Intl.NumberFormat('uz-UZ').format(Math.round(n || 0)) + " so'm"; }
+    function fmts(n) { if (n >= 1000) return (n / 1000) + 'k'; return n; }
+
+    // ===================== TOAST =====================
+    let tt;
+    function toast(msg, type = '') {
+      const el = document.getElementById('toast');
+      el.innerHTML = (type === 's' ? '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>' : type === 'e' ? '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>' : '') + msg;
+      el.className = 'toast ' + (type || ''); el.classList.add('show');
+      clearTimeout(tt); tt = setTimeout(() => el.classList.remove('show'), 2400);
+    }
+
+    // ===================== INIT =====================
+    window.onload = () => { initData(); };
+    document.getElementById('lu').addEventListener('keydown', e => { if (e.key === 'Enter') document.getElementById('lp').focus(); });
+    document.getElementById('lp').addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
+
+    tg.MainButton.setText("MA'LUMOTLARNI YANGILASH")
+      .hide(); // Kerak bo'lsa .show() qiling
+  </script>
+</body>
+
+</html>
