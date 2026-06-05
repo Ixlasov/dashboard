@@ -1,53 +1,166 @@
 <!DOCTYPE html>
 <html lang="uz">
+
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Skaner</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Barcode Scanner</title>
+
     <script src="https://unpkg.com/html5-qrcode"></script>
+
     <style>
-        body, html { margin: 0; padding: 0; height: 100%; overflow: hidden; background: #000; }
-        #reader { width: 100%; height: 100%; position: absolute; top: 0; left: 0; }
-        
-        /* Jadval uchun dizayn */
-        #dataList { position: absolute; bottom: 0; width: 100%; max-height: 30%; background: white; overflow-y: auto; z-index: 10; }
-        table { width: 100%; border-collapse: collapse; }
-        td { padding: 10px; border-bottom: 1px solid #ccc; }
+        * {
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            margin: 0;
+            padding: 15px;
+            background: #f5f5f5;
+        }
+
+        .search-box {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        input {
+            flex: 1;
+            height: 50px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            padding: 0 15px;
+            font-size: 18px;
+        }
+
+        button {
+            width: 55px;
+            border: none;
+            border-radius: 10px;
+            background: #2196f3;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        #reader {
+            width: 100%;
+            display: none;
+            margin-bottom: 15px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+        }
+
+        th,
+        td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: center;
+        }
+
+        th {
+            background: #2196f3;
+            color: white;
+        }
     </style>
 </head>
+
 <body>
+
+    <div class="search-box">
+        <input type="text" id="barcodeInput" placeholder="Shtrix kod">
+        <button onclick="openScanner()">📷</button>
+    </div>
 
     <div id="reader"></div>
 
-    <div id="dataList">
-        <table id="resultTable"><tbody></tbody></table>
-    </div>
+    <table>
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Shtrix Kod</th>
+                <th>Vaqt</th>
+            </tr>
+        </thead>
+        <tbody id="resultTable"></tbody>
+    </table>
 
     <script>
-        // Kamerani avtomatik ochish
-        const html5QrCode = new Html5Qrcode("reader");
-        
-        function startScanner() {
-            html5QrCode.start(
-                { facingMode: "environment" }, 
-                { fps: 10, qrbox: {width: 250, height: 400} },
-                (decodedText) => {
-                    addRow(decodedText);
-                    // Skanerlagandan so'ng qayta skanerlashni to'xtatmaslik uchun 
-                    // kerak bo'lsa bu qatorni olib tashlang:
-                    // html5QrCode.stop(); 
+        let rowNumber = 1;
+        let scannerStarted = false;
+        let html5QrCode;
+
+        function addToTable(code) {
+
+            document.getElementById("barcodeInput").value = code;
+
+            const tr = document.createElement("tr");
+
+            tr.innerHTML = `
+                <td>${rowNumber++}</td>
+                <td>${code}</td>
+                <td>${new Date().toLocaleTimeString()}</td>
+            `;
+
+            document
+                .getElementById("resultTable")
+                .prepend(tr);
+        }
+
+        async function openScanner() {
+
+            document.getElementById("reader").style.display = "block";
+
+            if (scannerStarted)
+                return;
+
+            html5QrCode = new Html5Qrcode("reader");
+
+            try {
+
+                const cameras = await Html5Qrcode.getCameras();
+
+                if (!cameras.length) {
+                    alert("Kamera topilmadi");
+                    return;
                 }
-            ).catch(err => alert("Kameraga ruxsat bering: " + err));
-        }
 
-        function addRow(data) {
-            const tbody = document.querySelector("#resultTable tbody");
-            const row = tbody.insertRow(0); // Eng yangisini tepaga qo'shish
-            row.insertCell(0).innerText = data;
-        }
+                scannerStarted = true;
 
-        // Sahifa yuklanganda kamerani avtomatik ishga tushirish
-        window.onload = startScanner;
+                html5QrCode.start(
+                    cameras[cameras.length - 1].id,
+                    {
+                        fps: 10,
+                        qrbox: {
+                            width: 250,
+                            height: 250
+                        }
+                    },
+                    (decodedText) => {
+
+                        addToTable(decodedText);
+
+                        html5QrCode.stop();
+
+                        scannerStarted = false;
+
+                        document.getElementById("reader").style.display = "none";
+                    }
+                );
+
+            } catch (err) {
+                console.error(err);
+                alert("Kamera ochilmadi");
+            }
+        }
     </script>
+
 </body>
+
 </html>
