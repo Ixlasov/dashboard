@@ -1907,13 +1907,22 @@
 
     /* Kamera oynasi inputdan tashqarida bo'lishi kerak */
     #reader {
-      position: absolute;
-      /* Yoki static qoldiring */
-      top: 100%;
+      position: fixed;
+      top: 0;
       left: 0;
       width: 100%;
-      z-index: 100;
-      background: white;
+      height: 100%;
+      z-index: 9999;
+      /* Barcha elementlardan ustun */
+      background: black;
+      display: none;
+      /* Dastlab yashirin */
+    }
+
+    #reader video {
+      width: 100% !important;
+      height: 100% !important;
+      object-fit: cover !important;
     }
 
     .sr-item.focused {
@@ -2169,7 +2178,12 @@
                 </svg>
               </span>
 
-              <div id="reader" style="width: 100%; display: none; margin-top: 10px;"></div>
+              <div id="reader" style="width: 100%; display: none; margin-top: 10px;">
+                <div id="reader">
+                  <button onclick="stopScanner()"
+                    style="position:absolute; top:20px; right:20px; z-index:10000;">Yopish</button>
+                </div>
+              </div>
               <button class="search-clear" id="sc" onclick="clearSI()">
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
                   stroke-linecap="round">
@@ -3186,14 +3200,18 @@
 
       html5QrCode.start(
         { facingMode: "environment" },
-        { fps: 10, qrbox: { width: 250, height: 150 } },
+        {
+          fps: 10,
+          qrbox: { width: 300, height: 200 }, // Skanerlash oynasi
+          aspectRatio: 1.0
+        },
         (decodedText) => {
+          // Barkod topilganda yozish
           document.getElementById('si').value = decodedText;
           stopScanner();
         }
       ).catch(err => {
-        // 4-tekshiruv: Aniq xatolik matnini ko'rsatish
-        toast("Kamera xatosi: " + err.toString(), 'e');
+        toast("Kamera xatosi: " + err, 'e');
       });
     }
 
