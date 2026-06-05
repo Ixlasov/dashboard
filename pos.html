@@ -1,40 +1,53 @@
 <!DOCTYPE html>
 <html lang="uz">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Barcode Scanner</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Barcode Scanner</title>
 
-    <script src="https://unpkg.com/html5-qrcode"></script>
+<style>
 
-    <style>
-        body{
+*{
     margin:0;
-    font-family:sans-serif;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Arial,sans-serif;
 }
 
-.toolbar{
-    display:flex;
+body{
+    background:#f5f5f5;
     padding:10px;
+}
+
+.header{
+    display:flex;
     gap:10px;
+    margin-bottom:10px;
 }
 
-.toolbar input{
+#barcodeInput{
     flex:1;
-    height:50px;
+    height:55px;
+    padding:0 15px;
     font-size:18px;
+    border:1px solid #ccc;
+    border-radius:12px;
 }
 
-.toolbar button{
+#scanBtn{
     width:60px;
+    border:none;
+    border-radius:12px;
+    background:#2196f3;
+    color:#fff;
+    font-size:24px;
 }
 
-#scannerModal{
+#scanner{
     display:none;
     position:fixed;
     inset:0;
-    background:black;
+    background:#000;
     z-index:9999;
 }
 
@@ -44,29 +57,39 @@
     object-fit:cover;
 }
 
-#scanArea{
+.overlay{
     position:absolute;
-    width:80%;
-    height:250px;
-    left:50%;
-    top:50%;
-    transform:translate(-50%,-50%);
-    border:3px solid white;
-    border-radius:15px;
+    inset:0;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    pointer-events:none;
+}
+
+.scan-box{
+    width:85%;
+    height:280px;
+    border:4px solid #fff;
+    border-radius:20px;
+    position:relative;
     overflow:hidden;
 }
 
-#scanLine{
+.scan-line{
     position:absolute;
     width:100%;
-    height:3px;
+    height:4px;
     background:red;
     animation:scan 2s linear infinite;
 }
 
 @keyframes scan{
-    from{top:0}
-    to{top:100%}
+    0%{
+        top:0;
+    }
+    100%{
+        top:100%;
+    }
 }
 
 #closeBtn{
@@ -75,45 +98,59 @@
     right:20px;
     width:50px;
     height:50px;
+    border:none;
+    border-radius:50%;
+    font-size:24px;
+    background:#fff;
+    z-index:10000;
 }
 
-#zoomBox{
+.zoom-panel{
     position:absolute;
     bottom:30px;
     left:50%;
     transform:translateX(-50%);
     display:flex;
+    align-items:center;
     gap:10px;
-    background:white;
-    padding:10px;
-    border-radius:10px;
+    background:#fff;
+    padding:10px 15px;
+    border-radius:12px;
 }
-    </style>
+
+.zoom-panel button{
+    width:40px;
+    height:40px;
+    border:none;
+    border-radius:10px;
+    font-size:22px;
+}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+    background:#fff;
+}
+
+th,td{
+    border:1px solid #ddd;
+    padding:10px;
+    text-align:center;
+}
+
+th{
+    background:#2196f3;
+    color:#fff;
+}
+
+</style>
 </head>
 
 <body>
 
-    <div class="toolbar">
-    <input type="text" id="barcodeInput" placeholder="Shtrix kod">
-    <button id="scanBtn">
-        <i class="ti ti-barcode"></i>
-    </button>
-</div>
-
-<div id="scannerModal">
-    <video id="video" autoplay playsinline></video>
-
-    <div id="scanArea">
-        <div id="scanLine"></div>
-    </div>
-
-    <div id="zoomBox">
-        <button onclick="setZoom(-1)">-</button>
-        <span id="zoomValue">1x</span>
-        <button onclick="setZoom(1)">+</button>
-    </div>
-
-    <button id="closeBtn">✕</button>
+<div class="header">
+    <input id="barcodeInput" placeholder="Shtrix kod">
+    <button id="scanBtn">📷</button>
 </div>
 
 <table>
@@ -123,30 +160,59 @@
             <th>Barcode</th>
         </tr>
     </thead>
-    <tbody id="resultBody"></tbody>
+    <tbody id="tbody"></tbody>
 </table>
 
-    <script type="module">
+<div id="scanner">
 
-const video = document.getElementById("video");
-const modal = document.getElementById("scannerModal");
+    <button id="closeBtn">✕</button>
 
-let stream;
-let detector;
+    <video id="video" autoplay playsinline></video>
+
+    <div class="overlay">
+        <div class="scan-box">
+            <div class="scan-line"></div>
+        </div>
+    </div>
+
+    <div class="zoom-panel">
+        <button onclick="changeZoom(-1)">-</button>
+        <span id="zoomText">1x</span>
+        <button onclick="changeZoom(1)">+</button>
+    </div>
+
+</div>
+
+<script>
+
+let stream = null;
+let track = null;
+let detector = null;
 let zoom = 1;
-let track;
-let counter = 1;
+let rowNo = 1;
+let scanning = false;
+
+const scanner = document.getElementById("scanner");
+const video = document.getElementById("video");
+const tbody = document.getElementById("tbody");
+const barcodeInput = document.getElementById("barcodeInput");
 
 if ("BarcodeDetector" in window) {
+
     detector = new BarcodeDetector({
-        formats:[
+        formats: [
             "ean_13",
             "ean_8",
             "code_128",
+            "code_39",
             "upc_a",
             "upc_e"
         ]
     });
+
+} else {
+
+    alert("BarcodeDetector qo'llab-quvvatlanmaydi");
 }
 
 document.getElementById("scanBtn")
@@ -157,102 +223,135 @@ document.getElementById("closeBtn")
 
 async function openCamera(){
 
-    modal.style.display="block";
+    try{
 
-    stream = await navigator.mediaDevices.getUserMedia({
-        video:{
-            facingMode:{
-                ideal:"environment"
-            },
-            width:{ideal:1920},
-            height:{ideal:1080}
-        }
-    });
+        scanner.style.display = "block";
 
-    video.srcObject = stream;
+        stream = await navigator.mediaDevices.getUserMedia({
+            video:{
+                facingMode:{
+                    ideal:"environment"
+                },
+                width:{
+                    ideal:1920
+                },
+                height:{
+                    ideal:1080
+                }
+            }
+        });
 
-    track = stream.getVideoTracks()[0];
+        video.srcObject = stream;
 
-    startDetect();
+        track = stream.getVideoTracks()[0];
+
+        scanning = true;
+
+        detectLoop();
+
+    }catch(err){
+
+        alert("Kamera ochilmadi");
+        console.log(err);
+    }
 }
 
-async function startDetect(){
+async function detectLoop(){
 
-    while(modal.style.display==="block"){
+    while(scanning){
 
         try{
 
-            const codes =
+            const barcodes =
                 await detector.detect(video);
 
-            if(codes.length){
+            if(barcodes.length){
 
-                const value =
-                    codes[0].rawValue;
+                const code =
+                    barcodes[0].rawValue;
 
-                addRow(value);
+                addBarcode(code);
+
+                navigator.vibrate?.(100);
 
                 closeCamera();
-                break;
+
+                return;
             }
 
         }catch(e){}
 
-        await new Promise(r=>setTimeout(r,80));
+        await new Promise(r=>setTimeout(r,50));
     }
 }
 
-function addRow(code){
+function addBarcode(code){
 
     barcodeInput.value = code;
 
-    resultBody.insertAdjacentHTML(
-        "afterbegin",
-        `
+    const row = `
         <tr>
-            <td>${counter++}</td>
+            <td>${rowNo++}</td>
             <td>${code}</td>
         </tr>
-        `
+    `;
+
+    tbody.insertAdjacentHTML(
+        "afterbegin",
+        row
     );
-}
-
-async function setZoom(step){
-
-    if(!track) return;
-
-    const caps = track.getCapabilities();
-
-    if(!caps.zoom) return;
-
-    zoom += step;
-
-    if(zoom < caps.zoom.min)
-        zoom = caps.zoom.min;
-
-    if(zoom > caps.zoom.max)
-        zoom = caps.zoom.max;
-
-    await track.applyConstraints({
-        advanced:[{zoom}]
-    });
-
-    zoomValue.innerText =
-        zoom.toFixed(1) + "x";
 }
 
 function closeCamera(){
 
-    modal.style.display="none";
+    scanning = false;
+
+    scanner.style.display = "none";
 
     if(stream){
+
         stream.getTracks()
-            .forEach(t=>t.stop());
+        .forEach(track => track.stop());
+    }
+}
+
+async function changeZoom(step){
+
+    if(!track) return;
+
+    const capabilities =
+        track.getCapabilities();
+
+    if(!capabilities.zoom) return;
+
+    zoom += step;
+
+    if(zoom < capabilities.zoom.min)
+        zoom = capabilities.zoom.min;
+
+    if(zoom > capabilities.zoom.max)
+        zoom = capabilities.zoom.max;
+
+    try{
+
+        await track.applyConstraints({
+            advanced:[
+                {
+                    zoom:zoom
+                }
+            ]
+        });
+
+        document.getElementById("zoomText")
+        .innerText =
+        zoom.toFixed(1) + "x";
+
+    }catch(err){
+        console.log(err);
     }
 }
 
 </script>
 
 </body>
-
 </html>
