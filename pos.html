@@ -9,157 +9,249 @@
     <script src="https://unpkg.com/html5-qrcode"></script>
 
     <style>
-        * {
-            box-sizing: border-box;
-            font-family: Arial, sans-serif;
-        }
+        body{
+    margin:0;
+    font-family:sans-serif;
+}
 
-        body {
-            margin: 0;
-            padding: 15px;
-            background: #f5f5f5;
-        }
+.toolbar{
+    display:flex;
+    padding:10px;
+    gap:10px;
+}
 
-        .search-box {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 15px;
-        }
+.toolbar input{
+    flex:1;
+    height:50px;
+    font-size:18px;
+}
 
-        input {
-            flex: 1;
-            height: 50px;
-            border: 1px solid #ccc;
-            border-radius: 10px;
-            padding: 0 15px;
-            font-size: 18px;
-        }
+.toolbar button{
+    width:60px;
+}
 
-        button {
-            width: 55px;
-            border: none;
-            border-radius: 10px;
-            background: #2196f3;
-            color: white;
-            font-size: 24px;
-            cursor: pointer;
-        }
+#scannerModal{
+    display:none;
+    position:fixed;
+    inset:0;
+    background:black;
+    z-index:9999;
+}
 
-        #reader {
-            width: 100%;
-            display: none;
-            margin-bottom: 15px;
-        }
+#video{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+}
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            background: white;
-        }
+#scanArea{
+    position:absolute;
+    width:80%;
+    height:250px;
+    left:50%;
+    top:50%;
+    transform:translate(-50%,-50%);
+    border:3px solid white;
+    border-radius:15px;
+    overflow:hidden;
+}
 
-        th,
-        td {
-            border: 1px solid #ddd;
-            padding: 10px;
-            text-align: center;
-        }
+#scanLine{
+    position:absolute;
+    width:100%;
+    height:3px;
+    background:red;
+    animation:scan 2s linear infinite;
+}
 
-        th {
-            background: #2196f3;
-            color: white;
-        }
+@keyframes scan{
+    from{top:0}
+    to{top:100%}
+}
+
+#closeBtn{
+    position:absolute;
+    top:20px;
+    right:20px;
+    width:50px;
+    height:50px;
+}
+
+#zoomBox{
+    position:absolute;
+    bottom:30px;
+    left:50%;
+    transform:translateX(-50%);
+    display:flex;
+    gap:10px;
+    background:white;
+    padding:10px;
+    border-radius:10px;
+}
     </style>
 </head>
 
 <body>
 
-    <div class="search-box">
-        <input type="text" id="barcodeInput" placeholder="Shtrix kod">
-        <button onclick="openScanner()">📷</button>
+    <div class="toolbar">
+    <input type="text" id="barcodeInput" placeholder="Shtrix kod">
+    <button id="scanBtn">
+        <i class="ti ti-barcode"></i>
+    </button>
+</div>
+
+<div id="scannerModal">
+    <video id="video" autoplay playsinline></video>
+
+    <div id="scanArea">
+        <div id="scanLine"></div>
     </div>
 
-    <div id="reader"></div>
+    <div id="zoomBox">
+        <button onclick="setZoom(-1)">-</button>
+        <span id="zoomValue">1x</span>
+        <button onclick="setZoom(1)">+</button>
+    </div>
 
-    <table>
-        <thead>
-            <tr>
-                <th>#</th>
-                <th>Shtrix Kod</th>
-                <th>Vaqt</th>
-            </tr>
-        </thead>
-        <tbody id="resultTable"></tbody>
-    </table>
+    <button id="closeBtn">✕</button>
+</div>
 
-    <script>
-        let rowNumber = 1;
-        let scannerStarted = false;
-        let html5QrCode;
+<table>
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>Barcode</th>
+        </tr>
+    </thead>
+    <tbody id="resultBody"></tbody>
+</table>
 
-        function addToTable(code) {
+    <script type="module">
 
-            document.getElementById("barcodeInput").value = code;
+const video = document.getElementById("video");
+const modal = document.getElementById("scannerModal");
 
-            const tr = document.createElement("tr");
+let stream;
+let detector;
+let zoom = 1;
+let track;
+let counter = 1;
 
-            tr.innerHTML = `
-                <td>${rowNumber++}</td>
-                <td>${code}</td>
-                <td>${new Date().toLocaleTimeString()}</td>
-            `;
+if ("BarcodeDetector" in window) {
+    detector = new BarcodeDetector({
+        formats:[
+            "ean_13",
+            "ean_8",
+            "code_128",
+            "upc_a",
+            "upc_e"
+        ]
+    });
+}
 
-            document
-                .getElementById("resultTable")
-                .prepend(tr);
+document.getElementById("scanBtn")
+.addEventListener("click", openCamera);
+
+document.getElementById("closeBtn")
+.addEventListener("click", closeCamera);
+
+async function openCamera(){
+
+    modal.style.display="block";
+
+    stream = await navigator.mediaDevices.getUserMedia({
+        video:{
+            facingMode:{
+                ideal:"environment"
+            },
+            width:{ideal:1920},
+            height:{ideal:1080}
         }
+    });
 
-        async function openScanner() {
+    video.srcObject = stream;
 
-            document.getElementById("reader").style.display = "block";
+    track = stream.getVideoTracks()[0];
 
-            if (scannerStarted)
-                return;
+    startDetect();
+}
 
-            html5QrCode = new Html5Qrcode("reader");
+async function startDetect(){
 
-            try {
+    while(modal.style.display==="block"){
 
-                const cameras = await Html5Qrcode.getCameras();
+        try{
 
-                if (!cameras.length) {
-                    alert("Kamera topilmadi");
-                    return;
-                }
+            const codes =
+                await detector.detect(video);
 
-                scannerStarted = true;
+            if(codes.length){
 
-                html5QrCode.start(
-                    cameras[cameras.length - 1].id,
-                    {
-                        fps: 10,
-                        qrbox: {
-                            width: 250,
-                            height: 250
-                        }
-                    },
-                    (decodedText) => {
+                const value =
+                    codes[0].rawValue;
 
-                        addToTable(decodedText);
+                addRow(value);
 
-                        html5QrCode.stop();
-
-                        scannerStarted = false;
-
-                        document.getElementById("reader").style.display = "none";
-                    }
-                );
-
-            } catch (err) {
-                console.error(err);
-                alert("Kamera ochilmadi");
+                closeCamera();
+                break;
             }
-        }
-    </script>
+
+        }catch(e){}
+
+        await new Promise(r=>setTimeout(r,80));
+    }
+}
+
+function addRow(code){
+
+    barcodeInput.value = code;
+
+    resultBody.insertAdjacentHTML(
+        "afterbegin",
+        `
+        <tr>
+            <td>${counter++}</td>
+            <td>${code}</td>
+        </tr>
+        `
+    );
+}
+
+async function setZoom(step){
+
+    if(!track) return;
+
+    const caps = track.getCapabilities();
+
+    if(!caps.zoom) return;
+
+    zoom += step;
+
+    if(zoom < caps.zoom.min)
+        zoom = caps.zoom.min;
+
+    if(zoom > caps.zoom.max)
+        zoom = caps.zoom.max;
+
+    await track.applyConstraints({
+        advanced:[{zoom}]
+    });
+
+    zoomValue.innerText =
+        zoom.toFixed(1) + "x";
+}
+
+function closeCamera(){
+
+    modal.style.display="none";
+
+    if(stream){
+        stream.getTracks()
+            .forEach(t=>t.stop());
+    }
+}
+
+</script>
 
 </body>
 
